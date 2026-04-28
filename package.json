@@ -1,0 +1,21 @@
+{
+  "name": "poly-wordle",
+  "version": "1.0.0",
+  "description": "Mobile-first daily 5-letter word game (EN / ES / Twi)",
+  "type": "module",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "build:data": "node scripts/build-datasets.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "an-array-of-english-words": "^2.0.0",
+    "an-array-of-spanish-words": "^2.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  }
+}

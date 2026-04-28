@@ -1,0 +1,1694 @@
+{
+  "language": "English",
+  "version": 1,
+  "words": [
+    {
+      "w": "about",
+      "d": "easy"
+    },
+    {
+      "w": "above",
+      "d": "medium"
+    },
+    {
+      "w": "adapt",
+      "d": "hard"
+    },
+    {
+      "w": "after",
+      "d": "easy"
+    },
+    {
+      "w": "again",
+      "d": "medium"
+    },
+    {
+      "w": "alarm",
+      "d": "hard"
+    },
+    {
+      "w": "album",
+      "d": "easy"
+    },
+    {
+      "w": "alive",
+      "d": "medium"
+    },
+    {
+      "w": "alone",
+      "d": "hard"
+    },
+    {
+      "w": "altar",
+      "d": "easy"
+    },
+    {
+      "w": "amble",
+      "d": "medium"
+    },
+    {
+      "w": "amber",
+      "d": "hard"
+    },
+    {
+      "w": "angel",
+      "d": "easy"
+    },
+    {
+      "w": "anger",
+      "d": "medium"
+    },
+    {
+      "w": "apple",
+      "d": "hard"
+    },
+    {
+      "w": "argon",
+      "d": "easy"
+    },
+    {
+      "w": "armor",
+      "d": "medium"
+    },
+    {
+      "w": "arrow",
+      "d": "hard"
+    },
+    {
+      "w": "aside",
+      "d": "easy"
+    },
+    {
+      "w": "avoid",
+      "d": "medium"
+    },
+    {
+      "w": "award",
+      "d": "hard"
+    },
+    {
+      "w": "badge",
+      "d": "easy"
+    },
+    {
+      "w": "basic",
+      "d": "medium"
+    },
+    {
+      "w": "batch",
+      "d": "hard"
+    },
+    {
+      "w": "beach",
+      "d": "easy"
+    },
+    {
+      "w": "bench",
+      "d": "medium"
+    },
+    {
+      "w": "blend",
+      "d": "hard"
+    },
+    {
+      "w": "blink",
+      "d": "easy"
+    },
+    {
+      "w": "brick",
+      "d": "medium"
+    },
+    {
+      "w": "bring",
+      "d": "hard"
+    },
+    {
+      "w": "brown",
+      "d": "easy"
+    },
+    {
+      "w": "brush",
+      "d": "medium"
+    },
+    {
+      "w": "camel",
+      "d": "hard"
+    },
+    {
+      "w": "cargo",
+      "d": "easy"
+    },
+    {
+      "w": "carry",
+      "d": "medium"
+    },
+    {
+      "w": "cause",
+      "d": "hard"
+    },
+    {
+      "w": "chair",
+      "d": "easy"
+    },
+    {
+      "w": "chaos",
+      "d": "medium"
+    },
+    {
+      "w": "charm",
+      "d": "hard"
+    },
+    {
+      "w": "clean",
+      "d": "easy"
+    },
+    {
+      "w": "clock",
+      "d": "medium"
+    },
+    {
+      "w": "cloth",
+      "d": "hard"
+    },
+    {
+      "w": "cloud",
+      "d": "easy"
+    },
+    {
+      "w": "coach",
+      "d": "medium"
+    },
+    {
+      "w": "cobra",
+      "d": "hard"
+    },
+    {
+      "w": "colon",
+      "d": "easy"
+    },
+    {
+      "w": "comma",
+      "d": "medium"
+    },
+    {
+      "w": "coral",
+      "d": "hard"
+    },
+    {
+      "w": "crash",
+      "d": "easy"
+    },
+    {
+      "w": "cream",
+      "d": "medium"
+    },
+    {
+      "w": "crisp",
+      "d": "hard"
+    },
+    {
+      "w": "cross",
+      "d": "easy"
+    },
+    {
+      "w": "crust",
+      "d": "medium"
+    },
+    {
+      "w": "daily",
+      "d": "hard"
+    },
+    {
+      "w": "dance",
+      "d": "easy"
+    },
+    {
+      "w": "decay",
+      "d": "medium"
+    },
+    {
+      "w": "delta",
+      "d": "hard"
+    },
+    {
+      "w": "demon",
+      "d": "easy"
+    },
+    {
+      "w": "dense",
+      "d": "medium"
+    },
+    {
+      "w": "diary",
+      "d": "hard"
+    },
+    {
+      "w": "diner",
+      "d": "easy"
+    },
+    {
+      "w": "disco",
+      "d": "medium"
+    },
+    {
+      "w": "diver",
+      "d": "hard"
+    },
+    {
+      "w": "drain",
+      "d": "easy"
+    },
+    {
+      "w": "dress",
+      "d": "medium"
+    },
+    {
+      "w": "drill",
+      "d": "hard"
+    },
+    {
+      "w": "drive",
+      "d": "easy"
+    },
+    {
+      "w": "dwarf",
+      "d": "medium"
+    },
+    {
+      "w": "eager",
+      "d": "hard"
+    },
+    {
+      "w": "earth",
+      "d": "easy"
+    },
+    {
+      "w": "eight",
+      "d": "medium"
+    },
+    {
+      "w": "elder",
+      "d": "hard"
+    },
+    {
+      "w": "elope",
+      "d": "easy"
+    },
+    {
+      "w": "empty",
+      "d": "medium"
+    },
+    {
+      "w": "equip",
+      "d": "hard"
+    },
+    {
+      "w": "error",
+      "d": "easy"
+    },
+    {
+      "w": "evade",
+      "d": "medium"
+    },
+    {
+      "w": "fancy",
+      "d": "hard"
+    },
+    {
+      "w": "favor",
+      "d": "easy"
+    },
+    {
+      "w": "fence",
+      "d": "medium"
+    },
+    {
+      "w": "feral",
+      "d": "hard"
+    },
+    {
+      "w": "field",
+      "d": "easy"
+    },
+    {
+      "w": "fifth",
+      "d": "medium"
+    },
+    {
+      "w": "fight",
+      "d": "hard"
+    },
+    {
+      "w": "final",
+      "d": "easy"
+    },
+    {
+      "w": "flair",
+      "d": "medium"
+    },
+    {
+      "w": "flame",
+      "d": "hard"
+    },
+    {
+      "w": "flare",
+      "d": "easy"
+    },
+    {
+      "w": "flask",
+      "d": "medium"
+    },
+    {
+      "w": "flock",
+      "d": "hard"
+    },
+    {
+      "w": "flora",
+      "d": "easy"
+    },
+    {
+      "w": "flour",
+      "d": "medium"
+    },
+    {
+      "w": "fluid",
+      "d": "hard"
+    },
+    {
+      "w": "focus",
+      "d": "easy"
+    },
+    {
+      "w": "folio",
+      "d": "medium"
+    },
+    {
+      "w": "forge",
+      "d": "hard"
+    },
+    {
+      "w": "frame",
+      "d": "easy"
+    },
+    {
+      "w": "frank",
+      "d": "medium"
+    },
+    {
+      "w": "fresh",
+      "d": "hard"
+    },
+    {
+      "w": "frill",
+      "d": "easy"
+    },
+    {
+      "w": "fruit",
+      "d": "medium"
+    },
+    {
+      "w": "funky",
+      "d": "hard"
+    },
+    {
+      "w": "giant",
+      "d": "easy"
+    },
+    {
+      "w": "glass",
+      "d": "medium"
+    },
+    {
+      "w": "globe",
+      "d": "hard"
+    },
+    {
+      "w": "grain",
+      "d": "easy"
+    },
+    {
+      "w": "grass",
+      "d": "medium"
+    },
+    {
+      "w": "great",
+      "d": "hard"
+    },
+    {
+      "w": "green",
+      "d": "easy"
+    },
+    {
+      "w": "grief",
+      "d": "medium"
+    },
+    {
+      "w": "grill",
+      "d": "hard"
+    },
+    {
+      "w": "grove",
+      "d": "easy"
+    },
+    {
+      "w": "guard",
+      "d": "medium"
+    },
+    {
+      "w": "guide",
+      "d": "hard"
+    },
+    {
+      "w": "habit",
+      "d": "easy"
+    },
+    {
+      "w": "happy",
+      "d": "medium"
+    },
+    {
+      "w": "heavy",
+      "d": "hard"
+    },
+    {
+      "w": "hinge",
+      "d": "easy"
+    },
+    {
+      "w": "horse",
+      "d": "medium"
+    },
+    {
+      "w": "hotel",
+      "d": "hard"
+    },
+    {
+      "w": "house",
+      "d": "easy"
+    },
+    {
+      "w": "human",
+      "d": "medium"
+    },
+    {
+      "w": "humor",
+      "d": "hard"
+    },
+    {
+      "w": "ideal",
+      "d": "easy"
+    },
+    {
+      "w": "image",
+      "d": "medium"
+    },
+    {
+      "w": "index",
+      "d": "hard"
+    },
+    {
+      "w": "ivory",
+      "d": "easy"
+    },
+    {
+      "w": "jewel",
+      "d": "medium"
+    },
+    {
+      "w": "joint",
+      "d": "hard"
+    },
+    {
+      "w": "jolly",
+      "d": "easy"
+    },
+    {
+      "w": "judge",
+      "d": "medium"
+    },
+    {
+      "w": "knife",
+      "d": "hard"
+    },
+    {
+      "w": "knock",
+      "d": "easy"
+    },
+    {
+      "w": "large",
+      "d": "medium"
+    },
+    {
+      "w": "laugh",
+      "d": "hard"
+    },
+    {
+      "w": "learn",
+      "d": "easy"
+    },
+    {
+      "w": "lemon",
+      "d": "medium"
+    },
+    {
+      "w": "light",
+      "d": "hard"
+    },
+    {
+      "w": "limit",
+      "d": "easy"
+    },
+    {
+      "w": "linen",
+      "d": "medium"
+    },
+    {
+      "w": "liter",
+      "d": "hard"
+    },
+    {
+      "w": "lobby",
+      "d": "easy"
+    },
+    {
+      "w": "lofty",
+      "d": "medium"
+    },
+    {
+      "w": "lunar",
+      "d": "hard"
+    },
+    {
+      "w": "macho",
+      "d": "easy"
+    },
+    {
+      "w": "magic",
+      "d": "medium"
+    },
+    {
+      "w": "major",
+      "d": "hard"
+    },
+    {
+      "w": "mango",
+      "d": "easy"
+    },
+    {
+      "w": "marsh",
+      "d": "medium"
+    },
+    {
+      "w": "match",
+      "d": "hard"
+    },
+    {
+      "w": "medal",
+      "d": "easy"
+    },
+    {
+      "w": "metal",
+      "d": "medium"
+    },
+    {
+      "w": "meter",
+      "d": "hard"
+    },
+    {
+      "w": "micro",
+      "d": "easy"
+    },
+    {
+      "w": "mimic",
+      "d": "medium"
+    },
+    {
+      "w": "minor",
+      "d": "hard"
+    },
+    {
+      "w": "model",
+      "d": "easy"
+    },
+    {
+      "w": "month",
+      "d": "medium"
+    },
+    {
+      "w": "moral",
+      "d": "hard"
+    },
+    {
+      "w": "motor",
+      "d": "easy"
+    },
+    {
+      "w": "mount",
+      "d": "medium"
+    },
+    {
+      "w": "music",
+      "d": "hard"
+    },
+    {
+      "w": "nacho",
+      "d": "easy"
+    },
+    {
+      "w": "natal",
+      "d": "medium"
+    },
+    {
+      "w": "naval",
+      "d": "hard"
+    },
+    {
+      "w": "nerve",
+      "d": "easy"
+    },
+    {
+      "w": "never",
+      "d": "medium"
+    },
+    {
+      "w": "night",
+      "d": "hard"
+    },
+    {
+      "w": "ninth",
+      "d": "easy"
+    },
+    {
+      "w": "noble",
+      "d": "medium"
+    },
+    {
+      "w": "novel",
+      "d": "hard"
+    },
+    {
+      "w": "ocean",
+      "d": "easy"
+    },
+    {
+      "w": "often",
+      "d": "medium"
+    },
+    {
+      "w": "olive",
+      "d": "hard"
+    },
+    {
+      "w": "omega",
+      "d": "easy"
+    },
+    {
+      "w": "onion",
+      "d": "medium"
+    },
+    {
+      "w": "opera",
+      "d": "hard"
+    },
+    {
+      "w": "orbit",
+      "d": "easy"
+    },
+    {
+      "w": "order",
+      "d": "medium"
+    },
+    {
+      "w": "organ",
+      "d": "hard"
+    },
+    {
+      "w": "other",
+      "d": "easy"
+    },
+    {
+      "w": "outer",
+      "d": "medium"
+    },
+    {
+      "w": "paint",
+      "d": "hard"
+    },
+    {
+      "w": "panel",
+      "d": "easy"
+    },
+    {
+      "w": "paper",
+      "d": "medium"
+    },
+    {
+      "w": "party",
+      "d": "hard"
+    },
+    {
+      "w": "patch",
+      "d": "easy"
+    },
+    {
+      "w": "pause",
+      "d": "medium"
+    },
+    {
+      "w": "peace",
+      "d": "hard"
+    },
+    {
+      "w": "peach",
+      "d": "easy"
+    },
+    {
+      "w": "pedal",
+      "d": "medium"
+    },
+    {
+      "w": "phase",
+      "d": "hard"
+    },
+    {
+      "w": "phone",
+      "d": "easy"
+    },
+    {
+      "w": "piano",
+      "d": "medium"
+    },
+    {
+      "w": "pixel",
+      "d": "hard"
+    },
+    {
+      "w": "pilot",
+      "d": "easy"
+    },
+    {
+      "w": "pitch",
+      "d": "medium"
+    },
+    {
+      "w": "place",
+      "d": "hard"
+    },
+    {
+      "w": "plain",
+      "d": "easy"
+    },
+    {
+      "w": "plane",
+      "d": "medium"
+    },
+    {
+      "w": "plant",
+      "d": "hard"
+    },
+    {
+      "w": "plate",
+      "d": "easy"
+    },
+    {
+      "w": "plaza",
+      "d": "medium"
+    },
+    {
+      "w": "plume",
+      "d": "hard"
+    },
+    {
+      "w": "point",
+      "d": "easy"
+    },
+    {
+      "w": "polar",
+      "d": "medium"
+    },
+    {
+      "w": "power",
+      "d": "hard"
+    },
+    {
+      "w": "press",
+      "d": "easy"
+    },
+    {
+      "w": "price",
+      "d": "medium"
+    },
+    {
+      "w": "prime",
+      "d": "hard"
+    },
+    {
+      "w": "print",
+      "d": "easy"
+    },
+    {
+      "w": "prize",
+      "d": "medium"
+    },
+    {
+      "w": "proof",
+      "d": "hard"
+    },
+    {
+      "w": "proud",
+      "d": "easy"
+    },
+    {
+      "w": "pulse",
+      "d": "medium"
+    },
+    {
+      "w": "puppy",
+      "d": "hard"
+    },
+    {
+      "w": "queen",
+      "d": "easy"
+    },
+    {
+      "w": "quest",
+      "d": "medium"
+    },
+    {
+      "w": "quick",
+      "d": "hard"
+    },
+    {
+      "w": "quiet",
+      "d": "easy"
+    },
+    {
+      "w": "quill",
+      "d": "medium"
+    },
+    {
+      "w": "quote",
+      "d": "hard"
+    },
+    {
+      "w": "radar",
+      "d": "easy"
+    },
+    {
+      "w": "radio",
+      "d": "medium"
+    },
+    {
+      "w": "raise",
+      "d": "hard"
+    },
+    {
+      "w": "rally",
+      "d": "easy"
+    },
+    {
+      "w": "ranch",
+      "d": "medium"
+    },
+    {
+      "w": "range",
+      "d": "hard"
+    },
+    {
+      "w": "rapid",
+      "d": "easy"
+    },
+    {
+      "w": "ratio",
+      "d": "medium"
+    },
+    {
+      "w": "reach",
+      "d": "hard"
+    },
+    {
+      "w": "ready",
+      "d": "easy"
+    },
+    {
+      "w": "realm",
+      "d": "medium"
+    },
+    {
+      "w": "rebel",
+      "d": "hard"
+    },
+    {
+      "w": "refer",
+      "d": "easy"
+    },
+    {
+      "w": "relax",
+      "d": "medium"
+    },
+    {
+      "w": "renew",
+      "d": "hard"
+    },
+    {
+      "w": "reply",
+      "d": "easy"
+    },
+    {
+      "w": "reset",
+      "d": "medium"
+    },
+    {
+      "w": "retry",
+      "d": "hard"
+    },
+    {
+      "w": "revel",
+      "d": "easy"
+    },
+    {
+      "w": "ridge",
+      "d": "medium"
+    },
+    {
+      "w": "rigid",
+      "d": "hard"
+    },
+    {
+      "w": "risky",
+      "d": "easy"
+    },
+    {
+      "w": "river",
+      "d": "medium"
+    },
+    {
+      "w": "robin",
+      "d": "hard"
+    },
+    {
+      "w": "robot",
+      "d": "easy"
+    },
+    {
+      "w": "royal",
+      "d": "medium"
+    },
+    {
+      "w": "rugby",
+      "d": "hard"
+    },
+    {
+      "w": "salad",
+      "d": "easy"
+    },
+    {
+      "w": "sandy",
+      "d": "medium"
+    },
+    {
+      "w": "scale",
+      "d": "hard"
+    },
+    {
+      "w": "scarf",
+      "d": "easy"
+    },
+    {
+      "w": "scene",
+      "d": "medium"
+    },
+    {
+      "w": "scope",
+      "d": "hard"
+    },
+    {
+      "w": "score",
+      "d": "easy"
+    },
+    {
+      "w": "sense",
+      "d": "medium"
+    },
+    {
+      "w": "serve",
+      "d": "hard"
+    },
+    {
+      "w": "seven",
+      "d": "easy"
+    },
+    {
+      "w": "shade",
+      "d": "medium"
+    },
+    {
+      "w": "shake",
+      "d": "hard"
+    },
+    {
+      "w": "shape",
+      "d": "easy"
+    },
+    {
+      "w": "share",
+      "d": "medium"
+    },
+    {
+      "w": "sharp",
+      "d": "hard"
+    },
+    {
+      "w": "shelf",
+      "d": "easy"
+    },
+    {
+      "w": "shine",
+      "d": "medium"
+    },
+    {
+      "w": "shirt",
+      "d": "hard"
+    },
+    {
+      "w": "shock",
+      "d": "easy"
+    },
+    {
+      "w": "shoot",
+      "d": "medium"
+    },
+    {
+      "w": "short",
+      "d": "hard"
+    },
+    {
+      "w": "shout",
+      "d": "easy"
+    },
+    {
+      "w": "shown",
+      "d": "medium"
+    },
+    {
+      "w": "shrub",
+      "d": "hard"
+    },
+    {
+      "w": "sidle",
+      "d": "easy"
+    },
+    {
+      "w": "sight",
+      "d": "medium"
+    },
+    {
+      "w": "silly",
+      "d": "hard"
+    },
+    {
+      "w": "since",
+      "d": "easy"
+    },
+    {
+      "w": "siren",
+      "d": "medium"
+    },
+    {
+      "w": "sixth",
+      "d": "hard"
+    },
+    {
+      "w": "skill",
+      "d": "easy"
+    },
+    {
+      "w": "skulk",
+      "d": "medium"
+    },
+    {
+      "w": "sleep",
+      "d": "hard"
+    },
+    {
+      "w": "slice",
+      "d": "easy"
+    },
+    {
+      "w": "slide",
+      "d": "medium"
+    },
+    {
+      "w": "slope",
+      "d": "hard"
+    },
+    {
+      "w": "smart",
+      "d": "easy"
+    },
+    {
+      "w": "smile",
+      "d": "medium"
+    },
+    {
+      "w": "smith",
+      "d": "hard"
+    },
+    {
+      "w": "smoke",
+      "d": "easy"
+    },
+    {
+      "w": "snack",
+      "d": "medium"
+    },
+    {
+      "w": "snare",
+      "d": "hard"
+    },
+    {
+      "w": "solid",
+      "d": "easy"
+    },
+    {
+      "w": "solve",
+      "d": "medium"
+    },
+    {
+      "w": "sound",
+      "d": "hard"
+    },
+    {
+      "w": "south",
+      "d": "easy"
+    },
+    {
+      "w": "space",
+      "d": "medium"
+    },
+    {
+      "w": "spare",
+      "d": "hard"
+    },
+    {
+      "w": "spark",
+      "d": "easy"
+    },
+    {
+      "w": "speak",
+      "d": "medium"
+    },
+    {
+      "w": "speed",
+      "d": "hard"
+    },
+    {
+      "w": "spell",
+      "d": "easy"
+    },
+    {
+      "w": "spend",
+      "d": "medium"
+    },
+    {
+      "w": "spice",
+      "d": "hard"
+    },
+    {
+      "w": "spike",
+      "d": "easy"
+    },
+    {
+      "w": "spoon",
+      "d": "medium"
+    },
+    {
+      "w": "sport",
+      "d": "hard"
+    },
+    {
+      "w": "stack",
+      "d": "easy"
+    },
+    {
+      "w": "stage",
+      "d": "medium"
+    },
+    {
+      "w": "stain",
+      "d": "hard"
+    },
+    {
+      "w": "stale",
+      "d": "easy"
+    },
+    {
+      "w": "stamp",
+      "d": "medium"
+    },
+    {
+      "w": "stand",
+      "d": "hard"
+    },
+    {
+      "w": "stare",
+      "d": "easy"
+    },
+    {
+      "w": "start",
+      "d": "medium"
+    },
+    {
+      "w": "state",
+      "d": "hard"
+    },
+    {
+      "w": "steam",
+      "d": "easy"
+    },
+    {
+      "w": "steel",
+      "d": "medium"
+    },
+    {
+      "w": "steep",
+      "d": "hard"
+    },
+    {
+      "w": "stick",
+      "d": "easy"
+    },
+    {
+      "w": "still",
+      "d": "medium"
+    },
+    {
+      "w": "stock",
+      "d": "hard"
+    },
+    {
+      "w": "stone",
+      "d": "easy"
+    },
+    {
+      "w": "store",
+      "d": "medium"
+    },
+    {
+      "w": "storm",
+      "d": "hard"
+    },
+    {
+      "w": "story",
+      "d": "easy"
+    },
+    {
+      "w": "stout",
+      "d": "medium"
+    },
+    {
+      "w": "strap",
+      "d": "hard"
+    },
+    {
+      "w": "straw",
+      "d": "easy"
+    },
+    {
+      "w": "strip",
+      "d": "medium"
+    },
+    {
+      "w": "study",
+      "d": "hard"
+    },
+    {
+      "w": "stuff",
+      "d": "easy"
+    },
+    {
+      "w": "style",
+      "d": "medium"
+    },
+    {
+      "w": "sugar",
+      "d": "hard"
+    },
+    {
+      "w": "suite",
+      "d": "easy"
+    },
+    {
+      "w": "sunny",
+      "d": "medium"
+    },
+    {
+      "w": "surge",
+      "d": "hard"
+    },
+    {
+      "w": "sweet",
+      "d": "easy"
+    },
+    {
+      "w": "swift",
+      "d": "medium"
+    },
+    {
+      "w": "swirl",
+      "d": "hard"
+    },
+    {
+      "w": "sword",
+      "d": "easy"
+    },
+    {
+      "w": "table",
+      "d": "medium"
+    },
+    {
+      "w": "taken",
+      "d": "hard"
+    },
+    {
+      "w": "talon",
+      "d": "easy"
+    },
+    {
+      "w": "tasty",
+      "d": "medium"
+    },
+    {
+      "w": "teach",
+      "d": "hard"
+    },
+    {
+      "w": "teams",
+      "d": "easy"
+    },
+    {
+      "w": "teeth",
+      "d": "medium"
+    },
+    {
+      "w": "tempo",
+      "d": "hard"
+    },
+    {
+      "w": "tenet",
+      "d": "easy"
+    },
+    {
+      "w": "thank",
+      "d": "medium"
+    },
+    {
+      "w": "thick",
+      "d": "hard"
+    },
+    {
+      "w": "thing",
+      "d": "easy"
+    },
+    {
+      "w": "third",
+      "d": "medium"
+    },
+    {
+      "w": "thorn",
+      "d": "hard"
+    },
+    {
+      "w": "throw",
+      "d": "easy"
+    },
+    {
+      "w": "thumb",
+      "d": "medium"
+    },
+    {
+      "w": "tidal",
+      "d": "hard"
+    },
+    {
+      "w": "tight",
+      "d": "easy"
+    },
+    {
+      "w": "titan",
+      "d": "medium"
+    },
+    {
+      "w": "toast",
+      "d": "hard"
+    },
+    {
+      "w": "token",
+      "d": "easy"
+    },
+    {
+      "w": "torch",
+      "d": "medium"
+    },
+    {
+      "w": "total",
+      "d": "hard"
+    },
+    {
+      "w": "touch",
+      "d": "easy"
+    },
+    {
+      "w": "tough",
+      "d": "medium"
+    },
+    {
+      "w": "tower",
+      "d": "hard"
+    },
+    {
+      "w": "trace",
+      "d": "easy"
+    },
+    {
+      "w": "track",
+      "d": "medium"
+    },
+    {
+      "w": "trade",
+      "d": "hard"
+    },
+    {
+      "w": "trail",
+      "d": "easy"
+    },
+    {
+      "w": "train",
+      "d": "medium"
+    },
+    {
+      "w": "treat",
+      "d": "hard"
+    },
+    {
+      "w": "trend",
+      "d": "easy"
+    },
+    {
+      "w": "trial",
+      "d": "medium"
+    },
+    {
+      "w": "tribe",
+      "d": "hard"
+    },
+    {
+      "w": "trick",
+      "d": "easy"
+    },
+    {
+      "w": "tulip",
+      "d": "medium"
+    },
+    {
+      "w": "twist",
+      "d": "hard"
+    },
+    {
+      "w": "ultra",
+      "d": "easy"
+    },
+    {
+      "w": "union",
+      "d": "medium"
+    },
+    {
+      "w": "unity",
+      "d": "hard"
+    },
+    {
+      "w": "upper",
+      "d": "easy"
+    },
+    {
+      "w": "upset",
+      "d": "medium"
+    },
+    {
+      "w": "urban",
+      "d": "hard"
+    },
+    {
+      "w": "valid",
+      "d": "easy"
+    },
+    {
+      "w": "value",
+      "d": "medium"
+    },
+    {
+      "w": "vapor",
+      "d": "hard"
+    },
+    {
+      "w": "vault",
+      "d": "easy"
+    },
+    {
+      "w": "venue",
+      "d": "medium"
+    },
+    {
+      "w": "video",
+      "d": "hard"
+    },
+    {
+      "w": "virus",
+      "d": "easy"
+    },
+    {
+      "w": "visit",
+      "d": "medium"
+    },
+    {
+      "w": "vital",
+      "d": "hard"
+    },
+    {
+      "w": "vocal",
+      "d": "easy"
+    },
+    {
+      "w": "voice",
+      "d": "medium"
+    },
+    {
+      "w": "voter",
+      "d": "hard"
+    },
+    {
+      "w": "wagon",
+      "d": "easy"
+    },
+    {
+      "w": "waist",
+      "d": "medium"
+    },
+    {
+      "w": "water",
+      "d": "hard"
+    },
+    {
+      "w": "weave",
+      "d": "easy"
+    },
+    {
+      "w": "weigh",
+      "d": "medium"
+    },
+    {
+      "w": "weird",
+      "d": "hard"
+    },
+    {
+      "w": "wheel",
+      "d": "easy"
+    },
+    {
+      "w": "where",
+      "d": "medium"
+    },
+    {
+      "w": "which",
+      "d": "hard"
+    },
+    {
+      "w": "while",
+      "d": "easy"
+    },
+    {
+      "w": "white",
+      "d": "medium"
+    },
+    {
+      "w": "whole",
+      "d": "hard"
+    },
+    {
+      "w": "width",
+      "d": "easy"
+    },
+    {
+      "w": "widen",
+      "d": "medium"
+    },
+    {
+      "w": "windy",
+      "d": "hard"
+    },
+    {
+      "w": "witch",
+      "d": "easy"
+    },
+    {
+      "w": "woman",
+      "d": "medium"
+    },
+    {
+      "w": "world",
+      "d": "hard"
+    },
+    {
+      "w": "worry",
+      "d": "easy"
+    },
+    {
+      "w": "wordy",
+      "d": "medium"
+    },
+    {
+      "w": "write",
+      "d": "hard"
+    },
+    {
+      "w": "wrong",
+      "d": "easy"
+    },
+    {
+      "w": "yacht",
+      "d": "medium"
+    },
+    {
+      "w": "yearn",
+      "d": "hard"
+    },
+    {
+      "w": "yield",
+      "d": "easy"
+    },
+    {
+      "w": "youth",
+      "d": "medium"
+    }
+  ]
+}

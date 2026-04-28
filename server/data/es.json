@@ -1,0 +1,702 @@
+{
+  "language": "Spanish",
+  "version": 1,
+  "words": [
+    {
+      "w": "abajo",
+      "d": "easy"
+    },
+    {
+      "w": "abrir",
+      "d": "medium"
+    },
+    {
+      "w": "acero",
+      "d": "hard"
+    },
+    {
+      "w": "actor",
+      "d": "easy"
+    },
+    {
+      "w": "agudo",
+      "d": "medium"
+    },
+    {
+      "w": "alarm",
+      "d": "hard"
+    },
+    {
+      "w": "amigo",
+      "d": "easy"
+    },
+    {
+      "w": "angel",
+      "d": "medium"
+    },
+    {
+      "w": "arena",
+      "d": "hard"
+    },
+    {
+      "w": "aroma",
+      "d": "easy"
+    },
+    {
+      "w": "arroz",
+      "d": "medium"
+    },
+    {
+      "w": "asado",
+      "d": "hard"
+    },
+    {
+      "w": "asilo",
+      "d": "easy"
+    },
+    {
+      "w": "atlas",
+      "d": "medium"
+    },
+    {
+      "w": "audio",
+      "d": "hard"
+    },
+    {
+      "w": "bajar",
+      "d": "easy"
+    },
+    {
+      "w": "balas",
+      "d": "medium"
+    },
+    {
+      "w": "banco",
+      "d": "hard"
+    },
+    {
+      "w": "barba",
+      "d": "easy"
+    },
+    {
+      "w": "barco",
+      "d": "medium"
+    },
+    {
+      "w": "basar",
+      "d": "hard"
+    },
+    {
+      "w": "besos",
+      "d": "easy"
+    },
+    {
+      "w": "bomba",
+      "d": "medium"
+    },
+    {
+      "w": "borde",
+      "d": "hard"
+    },
+    {
+      "w": "brazo",
+      "d": "easy"
+    },
+    {
+      "w": "breve",
+      "d": "medium"
+    },
+    {
+      "w": "bueno",
+      "d": "hard"
+    },
+    {
+      "w": "busca",
+      "d": "easy"
+    },
+    {
+      "w": "cable",
+      "d": "medium"
+    },
+    {
+      "w": "cacao",
+      "d": "hard"
+    },
+    {
+      "w": "calla",
+      "d": "easy"
+    },
+    {
+      "w": "calma",
+      "d": "medium"
+    },
+    {
+      "w": "calor",
+      "d": "hard"
+    },
+    {
+      "w": "canto",
+      "d": "easy"
+    },
+    {
+      "w": "capas",
+      "d": "medium"
+    },
+    {
+      "w": "cargo",
+      "d": "hard"
+    },
+    {
+      "w": "carne",
+      "d": "easy"
+    },
+    {
+      "w": "carta",
+      "d": "medium"
+    },
+    {
+      "w": "causa",
+      "d": "hard"
+    },
+    {
+      "w": "cazar",
+      "d": "easy"
+    },
+    {
+      "w": "cebra",
+      "d": "medium"
+    },
+    {
+      "w": "cenar",
+      "d": "hard"
+    },
+    {
+      "w": "cerdo",
+      "d": "easy"
+    },
+    {
+      "w": "chico",
+      "d": "medium"
+    },
+    {
+      "w": "cinco",
+      "d": "hard"
+    },
+    {
+      "w": "citas",
+      "d": "easy"
+    },
+    {
+      "w": "claro",
+      "d": "medium"
+    },
+    {
+      "w": "clave",
+      "d": "hard"
+    },
+    {
+      "w": "clima",
+      "d": "easy"
+    },
+    {
+      "w": "cobre",
+      "d": "medium"
+    },
+    {
+      "w": "coche",
+      "d": "hard"
+    },
+    {
+      "w": "coger",
+      "d": "easy"
+    },
+    {
+      "w": "comer",
+      "d": "medium"
+    },
+    {
+      "w": "coral",
+      "d": "hard"
+    },
+    {
+      "w": "corre",
+      "d": "easy"
+    },
+    {
+      "w": "costa",
+      "d": "medium"
+    },
+    {
+      "w": "crear",
+      "d": "hard"
+    },
+    {
+      "w": "crema",
+      "d": "easy"
+    },
+    {
+      "w": "cruce",
+      "d": "medium"
+    },
+    {
+      "w": "cruel",
+      "d": "hard"
+    },
+    {
+      "w": "curar",
+      "d": "easy"
+    },
+    {
+      "w": "curso",
+      "d": "medium"
+    },
+    {
+      "w": "dados",
+      "d": "hard"
+    },
+    {
+      "w": "danza",
+      "d": "easy"
+    },
+    {
+      "w": "deber",
+      "d": "medium"
+    },
+    {
+      "w": "decir",
+      "d": "hard"
+    },
+    {
+      "w": "dejar",
+      "d": "easy"
+    },
+    {
+      "w": "delta",
+      "d": "medium"
+    },
+    {
+      "w": "desde",
+      "d": "hard"
+    },
+    {
+      "w": "deseo",
+      "d": "easy"
+    },
+    {
+      "w": "deuda",
+      "d": "medium"
+    },
+    {
+      "w": "dieta",
+      "d": "hard"
+    },
+    {
+      "w": "dolor",
+      "d": "easy"
+    },
+    {
+      "w": "donar",
+      "d": "medium"
+    },
+    {
+      "w": "droga",
+      "d": "hard"
+    },
+    {
+      "w": "dudas",
+      "d": "easy"
+    },
+    {
+      "w": "dulce",
+      "d": "medium"
+    },
+    {
+      "w": "durar",
+      "d": "hard"
+    },
+    {
+      "w": "ebrio",
+      "d": "easy"
+    },
+    {
+      "w": "edema",
+      "d": "medium"
+    },
+    {
+      "w": "enojo",
+      "d": "hard"
+    },
+    {
+      "w": "entra",
+      "d": "easy"
+    },
+    {
+      "w": "envio",
+      "d": "medium"
+    },
+    {
+      "w": "error",
+      "d": "hard"
+    },
+    {
+      "w": "estar",
+      "d": "easy"
+    },
+    {
+      "w": "estas",
+      "d": "medium"
+    },
+    {
+      "w": "estos",
+      "d": "hard"
+    },
+    {
+      "w": "extra",
+      "d": "easy"
+    },
+    {
+      "w": "falso",
+      "d": "medium"
+    },
+    {
+      "w": "feliz",
+      "d": "hard"
+    },
+    {
+      "w": "fibra",
+      "d": "easy"
+    },
+    {
+      "w": "flaco",
+      "d": "medium"
+    },
+    {
+      "w": "floja",
+      "d": "hard"
+    },
+    {
+      "w": "flojo",
+      "d": "easy"
+    },
+    {
+      "w": "fumar",
+      "d": "medium"
+    },
+    {
+      "w": "fusil",
+      "d": "hard"
+    },
+    {
+      "w": "gasto",
+      "d": "easy"
+    },
+    {
+      "w": "gatos",
+      "d": "medium"
+    },
+    {
+      "w": "gordo",
+      "d": "hard"
+    },
+    {
+      "w": "grasa",
+      "d": "easy"
+    },
+    {
+      "w": "grupo",
+      "d": "medium"
+    },
+    {
+      "w": "guapo",
+      "d": "hard"
+    },
+    {
+      "w": "haber",
+      "d": "easy"
+    },
+    {
+      "w": "hallo",
+      "d": "medium"
+    },
+    {
+      "w": "harta",
+      "d": "hard"
+    },
+    {
+      "w": "harto",
+      "d": "easy"
+    },
+    {
+      "w": "hielo",
+      "d": "medium"
+    },
+    {
+      "w": "hogar",
+      "d": "hard"
+    },
+    {
+      "w": "honor",
+      "d": "easy"
+    },
+    {
+      "w": "hueco",
+      "d": "medium"
+    },
+    {
+      "w": "ideal",
+      "d": "hard"
+    },
+    {
+      "w": "jamon",
+      "d": "easy"
+    },
+    {
+      "w": "juego",
+      "d": "medium"
+    },
+    {
+      "w": "junto",
+      "d": "hard"
+    },
+    {
+      "w": "largo",
+      "d": "easy"
+    },
+    {
+      "w": "llama",
+      "d": "medium"
+    },
+    {
+      "w": "llano",
+      "d": "hard"
+    },
+    {
+      "w": "lucha",
+      "d": "easy"
+    },
+    {
+      "w": "mango",
+      "d": "medium"
+    },
+    {
+      "w": "marca",
+      "d": "hard"
+    },
+    {
+      "w": "matar",
+      "d": "easy"
+    },
+    {
+      "w": "metal",
+      "d": "medium"
+    },
+    {
+      "w": "miedo",
+      "d": "hard"
+    },
+    {
+      "w": "mujer",
+      "d": "easy"
+    },
+    {
+      "w": "nunca",
+      "d": "medium"
+    },
+    {
+      "w": "oliva",
+      "d": "hard"
+    },
+    {
+      "w": "orden",
+      "d": "easy"
+    },
+    {
+      "w": "otros",
+      "d": "medium"
+    },
+    {
+      "w": "pagar",
+      "d": "hard"
+    },
+    {
+      "w": "papel",
+      "d": "easy"
+    },
+    {
+      "w": "parte",
+      "d": "medium"
+    },
+    {
+      "w": "pasto",
+      "d": "hard"
+    },
+    {
+      "w": "patas",
+      "d": "easy"
+    },
+    {
+      "w": "pausa",
+      "d": "medium"
+    },
+    {
+      "w": "pedal",
+      "d": "hard"
+    },
+    {
+      "w": "pegar",
+      "d": "easy"
+    },
+    {
+      "w": "pieza",
+      "d": "medium"
+    },
+    {
+      "w": "pilar",
+      "d": "hard"
+    },
+    {
+      "w": "placa",
+      "d": "easy"
+    },
+    {
+      "w": "plaza",
+      "d": "medium"
+    },
+    {
+      "w": "pobre",
+      "d": "hard"
+    },
+    {
+      "w": "poder",
+      "d": "easy"
+    },
+    {
+      "w": "punto",
+      "d": "medium"
+    },
+    {
+      "w": "radio",
+      "d": "hard"
+    },
+    {
+      "w": "rango",
+      "d": "easy"
+    },
+    {
+      "w": "rayas",
+      "d": "medium"
+    },
+    {
+      "w": "reina",
+      "d": "hard"
+    },
+    {
+      "w": "reino",
+      "d": "easy"
+    },
+    {
+      "w": "robar",
+      "d": "medium"
+    },
+    {
+      "w": "ruido",
+      "d": "hard"
+    },
+    {
+      "w": "saber",
+      "d": "easy"
+    },
+    {
+      "w": "sacar",
+      "d": "medium"
+    },
+    {
+      "w": "salir",
+      "d": "hard"
+    },
+    {
+      "w": "salta",
+      "d": "easy"
+    },
+    {
+      "w": "santo",
+      "d": "medium"
+    },
+    {
+      "w": "sello",
+      "d": "hard"
+    },
+    {
+      "w": "serie",
+      "d": "easy"
+    },
+    {
+      "w": "sonar",
+      "d": "medium"
+    },
+    {
+      "w": "suave",
+      "d": "hard"
+    },
+    {
+      "w": "subir",
+      "d": "easy"
+    },
+    {
+      "w": "tarde",
+      "d": "medium"
+    },
+    {
+      "w": "tarea",
+      "d": "hard"
+    },
+    {
+      "w": "total",
+      "d": "easy"
+    },
+    {
+      "w": "tutor",
+      "d": "medium"
+    },
+    {
+      "w": "unico",
+      "d": "hard"
+    },
+    {
+      "w": "vacas",
+      "d": "easy"
+    },
+    {
+      "w": "valer",
+      "d": "medium"
+    },
+    {
+      "w": "valor",
+      "d": "hard"
+    },
+    {
+      "w": "vamos",
+      "d": "easy"
+    },
+    {
+      "w": "vapor",
+      "d": "medium"
+    },
+    {
+      "w": "venir",
+      "d": "hard"
+    },
+    {
+      "w": "verde",
+      "d": "easy"
+    },
+    {
+      "w": "villa",
+      "d": "medium"
+    },
+    {
+      "w": "volar",
+      "d": "hard"
+    }
+  ]
+}
