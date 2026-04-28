@@ -76,29 +76,6 @@ body {
   line-height: 1.45;
 }
 
-.played-today-msg {
-  text-align: center;
-  font-size: 0.82rem;
-  color: var(--muted);
-  margin: 0 0 0.65rem;
-  max-width: 22rem;
-  margin-inline: auto;
-}
-
-.btn-reset {
-  display: block;
-  width: 100%;
-  max-width: 14rem;
-  margin: 0 auto 0.85rem;
-  padding: 0.55rem;
-  border-radius: 0.45rem;
-  border: 1px solid var(--tile-border);
-  background: var(--surface);
-  color: var(--text);
-  font: inherit;
-  cursor: pointer;
-}
-
 #lang-select {
   font: inherit;
   font-size: 0.9375rem;

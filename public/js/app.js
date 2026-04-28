@@ -44,9 +44,6 @@ const btnDismiss = document.getElementById("btn-dismiss");
 const shareCanvas = document.getElementById("share-canvas");
 const connectionBanner =
   document.getElementById("connection-banner") ?? undefined;
-const playedTodayMsg =
-  document.getElementById("played-today-msg") ?? undefined;
-const btnReset = document.getElementById("btn-reset") ?? undefined;
 
 /** Failed to get a playable session from the API (distinct from finished puzzle). */
 let bootstrapFailed = false;
@@ -275,12 +272,6 @@ function refreshPlayabilityUx() {
     connectionBanner.hidden = true;
     connectionBanner.textContent = "";
   }
-
-  const doneToday =
-    Boolean(sessionId) && gameFinishedFromRows() && lastOutcome !== null;
-
-  if (playedTodayMsg) playedTodayMsg.hidden = !doneToday;
-  if (btnReset) btnReset.hidden = !doneToday;
 }
 
 
@@ -1006,19 +997,6 @@ boardEl?.addEventListener("click", () => {
 
 keyboardEl?.addEventListener("click", (e) => {
   e.stopPropagation();
-});
-
-btnReset?.addEventListener("click", async () => {
-  localStorage.removeItem(storageKey(lang));
-  sessionId = null;
-  completedRows = [];
-  lastOutcome = null;
-  draft = "";
-  rowIdx = 0;
-  closeEndModal();
-  toastMsg("");
-  bootstrapFailed = false;
-  await startGame();
 });
 
 window.addEventListener("keydown", onPhysicalKey, true);

@@ -11,6 +11,7 @@ import {
   recordWinner,
   statsKey,
 } from "./statsStore.js";
+import { claimIpPlaySlot } from "./ipPlayStore.js";
 import { MAX_GUESSES, wordLengthForLang } from "../config.js";
 import { foldEnglishOrTwiGuess, foldSpanishGuess } from "./latinFold.js";
 
@@ -96,6 +97,24 @@ export function startGame(req, res) {
   }
   if (!isIsoDate(localDate)) {
     return res.status(400).json({ error: "invalid_local_date" });
+  }
+
+  const isResume =
+    (typeof resumeGuesses === "number" &&
+      Number.isFinite(resumeGuesses) &&
+      resumeGuesses > 0) ||
+    resumeStatus === "won" ||
+    resumeStatus === "lost";
+
+  if (!isResume) {
+    const ip = clientIp(req);
+    if (!claimIpPlaySlot(localDate, lang, ip)) {
+      return res.status(403).json({
+        error: "ip_already_played",
+        message:
+          "This network already played today’s puzzle in this language. Come back tomorrow or try another language.",
+      });
+    }
   }
 
   const fp = fingerprint(req);
