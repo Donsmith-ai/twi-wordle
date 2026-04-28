@@ -2,14 +2,20 @@
 
 const STORAGE_PREFIX = "dw-v2";
 const MAX_ROWS = 8;
-const WORD_LEN = 5;
-/** Time until the last tile’s flip animation has finished (stagger + duration). */
-const WIN_FLIP_COMPLETE_MS = (WORD_LEN - 1) * 75 + 560;
+
+/** Letters per puzzle: Twi uses 6, English and Spanish use 5. */
+function wordLen() {
+  return lang === "tw" ? 6 : 5;
+}
+
+function winFlipCompleteMs() {
+  return (wordLen() - 1) * 75 + 560;
+}
 /** Beat after flips before the end modal (lets confetti stay on screen briefly). */
 const WIN_MODAL_AFTER_MS = 650;
 
 /** Future: hard mode — server must enforce when enabled. */
-const GAME_CONFIG = { hardMode: false, wordLength: WORD_LEN, maxGuesses: MAX_ROWS };
+const GAME_CONFIG = { hardMode: false, wordLength: 5, maxGuesses: MAX_ROWS };
 void GAME_CONFIG;
 
 /** @type {'en'|'es'|'tw'} */
@@ -44,6 +50,71 @@ const btnReset = document.getElementById("btn-reset") ?? undefined;
 
 /** Failed to get a playable session from the API (distinct from finished puzzle). */
 let bootstrapFailed = false;
+
+/** Suppresses stale async results when startGame() is triggered again (e.g. language change during load). */
+let startGameGeneration = 0;
+
+/** Localized “tile colors” panel (right of the board). */
+const COLOR_LEGEND = {
+  en: {
+    title: "What the colors mean",
+    intro:
+      "After each guess, every tile tells you something about that letter in the secret word.",
+    correct:
+      "<strong>Correct</strong> — that letter is in the word and in the right spot.",
+    present:
+      "<strong>Wrong place</strong> — the letter appears in the word, but not in that position.",
+    absent:
+      "<strong>Not in word</strong> — that letter is not in the answer (or not another copy of it).",
+    footer: "The keyboard uses the same colors for your best clue per letter.",
+  },
+  es: {
+    title: "Qué significan los colores",
+    intro:
+      "Tras cada intento, cada casilla te dice algo sobre esa letra en la palabra secreta.",
+    correct:
+      "<strong>Correcta</strong> — la letra está en la palabra y en la posición correcta.",
+    present:
+      "<strong>Otro sitio</strong> — la letra está en la palabra, pero no en esa casilla.",
+    absent:
+      "<strong>No está</strong> — esa letra no forma parte de la palabra (o ya no quedan más iguales).",
+    footer:
+      "El teclado usa los mismos colores para la mejor pista de cada letra.",
+  },
+  tw: {
+    title: "Nnea nkontabu nkyerɛwee yi kyerɛ",
+    intro:
+      "Ɔde bere biara awie no, nkontae biara kyerɛ kasae no mu nkyerɛwei pa ara ho adeɛ.",
+    correct:
+      "<strong>Yiyeɛ</strong> — nkyerɛwei yi wɔ kasae no mu na esi baabi a ɛfa hɔ no ara so.",
+    present:
+      "<strong>Bere foforo</strong> — nkyerɛwei yi wɔ kasae no mu bere a esi baabi sei so ntumi nkɔ.",
+    absent:
+      "<strong>Ɛnni mu</strong> — nkontaebɔ nkoa nkura nkyerɛwei sei (bere a esi so ara).",
+    footer:
+      "Nkontaebɔ yi de ahintabetwerɛ biara bere a esi so pa ara kyerɛ.",
+  },
+};
+
+function applyColorLegendLang() {
+  const bundle = COLOR_LEGEND[lang] ?? COLOR_LEGEND.en;
+  const aside = document.getElementById("color-legend");
+  const h = document.getElementById("color-legend-heading");
+  const intro = document.getElementById("color-legend-intro");
+  const a = document.getElementById("legend-line-correct");
+  const b = document.getElementById("legend-line-present");
+  const c = document.getElementById("legend-line-absent");
+  const f = document.getElementById("color-legend-footer");
+  if (aside) {
+    aside.setAttribute("lang", lang === "tw" ? "tw" : lang === "es" ? "es" : "en");
+  }
+  if (h) h.textContent = bundle.title;
+  if (intro) intro.textContent = bundle.intro ?? "";
+  if (a) a.innerHTML = bundle.correct;
+  if (b) b.innerHTML = bundle.present;
+  if (c) c.innerHTML = bundle.absent;
+  if (f) f.textContent = bundle.footer;
+}
 
 function deviceId() {
   const k = "dw-device-id";
@@ -126,12 +197,12 @@ function sanitizeImportedRows(rows) {
       !r ||
       typeof r !== "object" ||
       typeof /** @type {{word?:unknown}} */ (r).word !== "string" ||
-      /** @type {{word:string}} */ (r).word.length !== WORD_LEN
+      /** @type {{word:string}} */ (r).word.length !== wordLen()
     ) {
       continue;
     }
     const fb = /** @type {{feedback?:unknown}} */ (r).feedback;
-    if (!Array.isArray(fb) || fb.length !== WORD_LEN) continue;
+    if (!Array.isArray(fb) || fb.length !== wordLen()) continue;
     if (!fb.every((x) => typeof x === "string")) continue;
     out.push({
       word: /** @type {{word:string}} */ (r).word.toLowerCase(),
@@ -141,19 +212,45 @@ function sanitizeImportedRows(rows) {
   return out;
 }
 
+/**
+ * Maps persisted rows to server resume hints (daily answer is deterministic per lang/date).
+ * @returns {{ guesses: number, resumeStatus: 'playing'|'won'|'lost' }}
+ */
+function deriveResumeFromRows(rows) {
+  const wl = wordLen();
+  if (!rows?.length) {
+    return { guesses: 0, resumeStatus: "playing" };
+  }
+  let guessesTaken = 0;
+  for (const row of rows) {
+    if (!row?.feedback?.length || row.feedback.length !== wl) continue;
+    guessesTaken++;
+    if (row.feedback.every((x) => x === "correct")) {
+      return { guesses: guessesTaken, resumeStatus: "won" };
+    }
+  }
+  if (guessesTaken >= MAX_ROWS) {
+    return { guesses: guessesTaken, resumeStatus: "lost" };
+  }
+  return { guesses: guessesTaken, resumeStatus: "playing" };
+}
+
 function gameFinishedFromRows() {
   try {
     if (!completedRows?.length) return false;
+    const wl = wordLen();
+    let guessesTaken = 0;
     for (const row of completedRows) {
       if (
         !row?.feedback?.length ||
-        row.feedback.length !== WORD_LEN
+        row.feedback.length !== wl
       ) {
         continue;
       }
+      guessesTaken++;
       if (row.feedback.every((x) => x === "correct")) return true;
     }
-    return completedRows.length >= MAX_ROWS;
+    return guessesTaken >= MAX_ROWS;
   } catch {
     completedRows = [];
     return false;
@@ -186,15 +283,28 @@ function refreshPlayabilityUx() {
   if (btnReset) btnReset.hidden = !doneToday;
 }
 
+
 function validCharsetForGuess(str, l) {
-  const lower = str.toLowerCase();
-  if (l === "es") return /^[a-zñ]{5}$/.test(lower);
-  return /^[a-z]{5}$/.test(lower);
+  const s = str.toLowerCase().normalize("NFC");
+  if (l === "es") return /^[a-zñ]{5}$/.test(s);
+  if (l === "tw") return /^[a-zɛɔ]{6}$/u.test(s);
+  return /^[a-z]{5}$/.test(s);
 }
 
-/** Match server guess folding (accented keys → plain letters). */
+/** Match server guess folding for ES; Twi accepts a–z + ɛɔ. */
 function normalizeTyped(ch, l) {
   if (!ch) return null;
+  if (l === "tw") {
+    let out = "";
+    for (const cp of ch.normalize("NFC").toLowerCase()) {
+      const nfc = cp.normalize("NFC");
+      if (nfc === "ɛ" || nfc === "ɔ") out += nfc;
+      else if (/[a-z]/.test(nfc)) out += nfc;
+      else return null;
+    }
+    if (out.length !== 1) return null;
+    return /^[a-zɛɔ]$/u.test(out) ? out : null;
+  }
   let out = "";
   for (const cp of ch.normalize("NFC").toLowerCase()) {
     const nfc = cp.normalize("NFC");
@@ -219,7 +329,7 @@ function keyboards() {
       ["ENTER", "z", "x", "c", "v", "b", "n", "m", "⌫"],
     ],
     tw: [
-      ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+      ["q", "w", "e", "ɛ", "r", "t", "y", "u", "i", "o", "ɔ", "p"],
       ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
       ["ENTER", "z", "x", "c", "v", "b", "n", "m", "⌫"],
     ],
@@ -228,11 +338,13 @@ function keyboards() {
 
 function buildBoard() {
   boardEl.innerHTML = "";
+  boardEl.style.setProperty("--board-cols", String(wordLen()));
+  boardEl.classList.toggle("board--tw", lang === "tw");
   for (let r = 0; r < MAX_ROWS; r++) {
     const row = document.createElement("div");
     row.className = "row";
     row.dataset.row = String(r);
-    for (let c = 0; c < WORD_LEN; c++) {
+    for (let c = 0; c < wordLen(); c++) {
       const t = document.createElement("div");
       t.className = "tile";
       t.dataset.col = String(c);
@@ -243,7 +355,7 @@ function buildBoard() {
 }
 
 function flashRowLetters() {
-  for (let c = 0; c < WORD_LEN; c++) {
+  for (let c = 0; c < wordLen(); c++) {
     const ch = draft[c] ?? "";
     setCell(
       rowIdx,
@@ -278,7 +390,7 @@ function applyRowFeedback(row, word, cssStates) {
   const rowEl = boardEl.querySelector(`.row[data-row="${row}"]`);
   if (!rowEl) return;
   const tiles = [...rowEl.querySelectorAll(".tile")];
-  for (let i = 0; i < WORD_LEN; i++) {
+  for (let i = 0; i < wordLen(); i++) {
     const st = cssStates[i];
     stripTile(tiles[i]);
     tiles[i].textContent = word[i]?.toUpperCase() ?? "";
@@ -299,11 +411,11 @@ function keyboardLetterHints() {
     if (
       !row?.word ||
       !Array.isArray(row.feedback) ||
-      row.feedback.length !== WORD_LEN
+      row.feedback.length !== wordLen()
     ) {
       continue;
     }
-    for (let i = 0; i < WORD_LEN; i++) {
+    for (let i = 0; i < wordLen(); i++) {
       const letter = row.word[i];
       const fb = row.feedback[i];
       if (fb !== "correct" && fb !== "present" && fb !== "absent") continue;
@@ -318,13 +430,16 @@ function renderKeyboard() {
   const hints = keyboardLetterHints();
   const layout = keyboards()[lang];
   keyboardEl.innerHTML = "";
+  keyboardEl.classList.toggle("keyboard--tw", lang === "tw");
   for (const line of layout) {
     const kr = document.createElement("div");
     kr.className = "kb-row";
     for (const key of line) {
       const b = document.createElement("button");
       b.type = "button";
-      b.className = "kb-key" + (key.length > 1 ? " wide" : "");
+      const wide =
+        key === "ENTER" || key === "⌫" || key.length > 1 ? " wide" : "";
+      b.className = "kb-key" + wide;
       b.textContent = key === "⌫" ? "⌫" : key.toUpperCase();
       b.dataset.key = key;
       if (key.length === 1) {
@@ -344,7 +459,7 @@ function refreshEnterDisabled() {
   document.querySelectorAll(".kb-key").forEach((btn) => {
     if (btn.dataset.key !== "ENTER") return;
     const ok =
-      draft.length === WORD_LEN && validCharsetForGuess(draft, lang) && canType();
+      draft.length === wordLen() && validCharsetForGuess(draft, lang) && canType();
     btn.disabled = !ok;
   });
 }
@@ -366,7 +481,7 @@ async function handleKeyTap(sym) {
       ? "ñ"
       : sym.toLowerCase();
   const n = normalizeTyped(ch, lang);
-  if (!n || draft.length >= WORD_LEN) return;
+  if (!n || draft.length >= wordLen()) return;
   draft += n;
   flashRowLetters();
   refreshEnterDisabled();
@@ -386,10 +501,11 @@ function onPhysicalKey(ev) {
     return;
   }
   const n = normalizeTyped(ev.key, lang);
-  if (n && draft.length < WORD_LEN) handleKeyTap(n);
+  if (n && draft.length < wordLen()) handleKeyTap(n);
 }
 
 async function startGame() {
+  let gen = 0;
   try {
     if (
       typeof location !== "undefined" &&
@@ -411,7 +527,7 @@ async function startGame() {
       saved.localDate === ld &&
       Array.isArray(saved.rows)
     ) {
-      sessionId = saved.sessionId;
+      const restoredRows = sanitizeImportedRows(saved.rows);
       lastOutcome =
         saved.outcome && typeof saved.outcome === "object"
           ? {
@@ -422,14 +538,17 @@ async function startGame() {
               stats: saved.outcome.stats ?? null,
             }
           : null;
-      completedRows = sanitizeImportedRows(saved.rows);
+      completedRows = restoredRows;
+      sessionId = null;
 
       if (gameFinishedFromRows() && !lastOutcome) {
         localStorage.removeItem(storageKey(lang));
         sessionId = null;
         completedRows = [];
         lastOutcome = null;
-      } else {
+      } else if (restoredRows.length > 0) {
+        gen = ++startGameGeneration;
+        const myGen = gen;
         rowIdx = completedRows.length;
         draft = "";
         buildBoard();
@@ -450,13 +569,61 @@ async function startGame() {
             lastOutcome.stats,
           );
         }
+
+        const resume = deriveResumeFromRows(completedRows);
+        const startRes = await api("/api/game/start", {
+          method: "POST",
+          body: {
+            lang,
+            localDate: ld,
+            timeZone: tz,
+            resumeGuesses: resume.guesses,
+            resumeStatus: resume.resumeStatus,
+          },
+        });
+        if (myGen !== startGameGeneration) return;
+
+        let resumeData = {};
+        try {
+          resumeData = await startRes.json();
+        } catch {
+          /* empty */
+        }
+        if (!startRes.ok || typeof resumeData.sessionId !== "string") {
+          localStorage.removeItem(storageKey(lang));
+          sessionId = null;
+          completedRows = [];
+          lastOutcome = null;
+          toastMsg("Could not sync session — reconnecting.");
+          return await startGame();
+        }
+        sessionId = resumeData.sessionId;
+        persist();
         focusGameSurface();
         bootstrapFailed = false;
+        refreshPlayabilityUx();
         return;
+      } else {
+        /* rows: [] or all rows rejected — snapshot matches “new game” after persist(),
+           but sessionId may be stale (e.g. server restart). Force a new /start. */
+        localStorage.removeItem(storageKey(lang));
+        sessionId = null;
+        completedRows = [];
+        lastOutcome = null;
       }
     }
 
+    gen = ++startGameGeneration;
+
+    sessionId = null;
+    completedRows = [];
+    rowIdx = 0;
+    draft = "";
     lastOutcome = null;
+    bootstrapFailed = false;
+    closeEndModal();
+    buildBoard();
+    renderKeyboard();
 
     const res = await api("/api/game/start", {
       method: "POST",
@@ -466,6 +633,8 @@ async function startGame() {
         timeZone: tz,
       },
     });
+    if (gen !== startGameGeneration) return;
+
     let data = {};
     try {
       data = await res.json();
@@ -473,20 +642,27 @@ async function startGame() {
       /* empty */
     }
     if (!res.ok) {
-      if (res.status === 403 && data.error === "ip_already_played") {
+      if (gen !== startGameGeneration) return;
+      const quotaReached =
+        res.status === 403 && data?.error === "ip_already_played";
+      if (quotaReached) {
         toastMsg(
           data.message ??
-            "This network already played today’s puzzle. Only one game per day is allowed.",
+            "This network already played today’s puzzle in this language. Pick another language or wait until tomorrow.",
         );
       } else {
         toastMsg("Could not start game — is the server running?");
       }
       sessionId = null;
-      bootstrapFailed = true;
+      completedRows = [];
+      lastOutcome = null;
+      // Only show the “no session / npm start” banner for real outages & parse errors—not daily quota per language.
+      bootstrapFailed = !quotaReached;
       buildBoard();
       renderKeyboard();
       return;
     }
+    if (gen !== startGameGeneration) return;
     sessionId = data.sessionId;
     completedRows = [];
     draft = "";
@@ -497,12 +673,16 @@ async function startGame() {
     focusGameSurface();
     bootstrapFailed = false;
   } catch (e) {
-    console.error(e);
-    toastMsg("Could not connect. Check network or run npm start.");
-    sessionId = null;
-    bootstrapFailed = true;
-    buildBoard();
-    renderKeyboard();
+    if (gen === startGameGeneration) {
+      console.error(e);
+      toastMsg("Could not connect. Check network or run npm start.");
+      sessionId = null;
+      completedRows = [];
+      lastOutcome = null;
+      bootstrapFailed = true;
+      buildBoard();
+      renderKeyboard();
+    }
   } finally {
     refreshPlayabilityUx();
   }
@@ -519,7 +699,7 @@ function winningRowIndex(rows) {
   if (!Array.isArray(rows)) return -1;
   return rows.findIndex(
     (row) =>
-      row?.feedback?.length === WORD_LEN &&
+      row?.feedback?.length === wordLen() &&
       row.feedback.every((x) => x === "correct"),
   );
 }
@@ -604,7 +784,7 @@ function focusGameSurface() {
 async function submitGuess() {
   if (!canType()) return;
   if (
-    draft.length !== WORD_LEN ||
+    draft.length !== wordLen() ||
     !validCharsetForGuess(draft, lang)
   )
     return;
@@ -622,10 +802,26 @@ async function submitGuess() {
     return;
   }
 
-  if (res.status === 404) {
+  if (
+    data.unknownSession === true ||
+    /** Legacy servers returned 404 here */
+    res.status === 404
+  ) {
     localStorage.removeItem(storageKey(lang));
     sessionId = null;
     toastMsg("Session expired — reloading.");
+    await startGame();
+    return;
+  }
+
+  if (
+    res.status === 409 &&
+    /** @type {{invalidReason?:string}} */ (data).invalidReason ===
+      "session_stale_length"
+  ) {
+    localStorage.removeItem(storageKey(lang));
+    sessionId = null;
+    toastMsg(data.message ?? "Starting new round — please enter again.");
     await startGame();
     return;
   }
@@ -649,7 +845,7 @@ async function submitGuess() {
   completedRows.push({ word: guess, feedback: data.feedback });
   const won = data.status === "won";
   const cssStates = won
-    ? Array(WORD_LEN).fill("correct")
+    ? Array(wordLen()).fill("correct")
     : data.feedback.map(mapApiStateToClass);
   applyRowFeedback(rowIdx, guess, cssStates);
   rowIdx++;
@@ -667,11 +863,11 @@ async function submitGuess() {
       const winRowIdx = rowIdx - 1;
       window.setTimeout(() => {
         celebrateWin(winRowIdx);
-      }, WIN_FLIP_COMPLETE_MS);
+      }, winFlipCompleteMs());
       window.setTimeout(() => {
         showEndModal(true, data.answer ?? "", data.stats ?? null);
         refreshPlayabilityUx();
-      }, WIN_FLIP_COMPLETE_MS + WIN_MODAL_AFTER_MS);
+      }, winFlipCompleteMs() + WIN_MODAL_AFTER_MS);
       return;
     }
     showEndModal(false, data.answer ?? "", data.stats ?? null);
@@ -746,12 +942,13 @@ function exportShare(won, answer) {
   ctx.fillStyle = "#94a3b8";
   ctx.fillText(isoLocalDate(), 20, 58);
 
-  const cell = 42;
+  const wl = wordLen();
+  const cell = wl === 6 ? 34 : 42;
   const gap = 6;
   const ox = 20;
   const oy = 80;
   for (let r = 0; r < MAX_ROWS; r++) {
-    for (let c = 0; c < WORD_LEN; c++) {
+    for (let c = 0; c < wordLen(); c++) {
       ctx.fillStyle = "#334155";
       const gx = ox + c * (cell + gap);
       const gy = oy + r * (cell + gap);
@@ -798,6 +995,7 @@ btnDismiss.addEventListener("click", () => {
 
 langSel.addEventListener("change", async () => {
   lang = /** @type {'en'|'es'|'tw'} */ (langSel.value);
+  applyColorLegendLang();
   await startGame();
 });
 
@@ -827,6 +1025,7 @@ window.addEventListener("keydown", onPhysicalKey, true);
 
 buildBoard();
 langSel.value = lang;
+applyColorLegendLang();
 startGame().then(() => {
   keyboardEl.hidden = false;
   focusGameSurface();

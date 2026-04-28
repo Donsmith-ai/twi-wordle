@@ -64,7 +64,9 @@ function buildSpanishGuessExtras() {
   for (let i = 0; i < words.length; i++) {
     const raw = words[i];
     if (typeof raw !== "string") continue;
-    const folded = foldSpanishGuess(raw);
+    const nfc = raw.normalize("NFC").toLowerCase();
+    // Skip per-character folding when the word is already playable glyphs only (majority case).
+    const folded = /^[a-zñ]{5}$/.test(nfc) ? nfc : foldSpanishGuess(raw);
     if (folded.length !== 5 || !/^[a-zñ]{5}$/.test(folded)) continue;
     set.add(folded);
   }
@@ -93,10 +95,8 @@ export function getAllWords(lang) {
 }
 
 /**
- * Accept guesses from the large permissive pool (plurals, inflections, etc.).
- * Twi also allows the English pool so common loanwords are not rejected.
- * @param {string} lang
- * @param {string} word normalized (folded) 5-letter string
+ * Twi `tw.json` holds the full HF corpus (6-letter); valid guesses are membership in that map.
+ * English/Spanish add extra permissive guess sets beyond solution words.
  */
 export function isValidWord(lang, word) {
   const sol = langToSolutionMap.get(lang);
@@ -104,15 +104,17 @@ export function isValidWord(lang, word) {
 
   if (lang === "en") return getEnGuessExtras().has(word);
   if (lang === "es") return getEsGuessExtras().has(word);
-  if (lang === "tw") return getEnGuessExtras().has(word);
-
   return false;
 }
 
 /**
- * For daily selection: curated solution pool only (not full guess lists).
+ * For daily selection: same pool as guesses (per language).
  * @param {string} lang
  */
 export function getWordPool(lang) {
   return getAllWords(lang);
 }
+
+/** Warm at startup so the first /api/game/guess for ES is not blocked by a cold Spanish extras build. */
+getEnGuessExtras();
+getEsGuessExtras();

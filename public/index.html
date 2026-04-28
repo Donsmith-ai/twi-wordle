@@ -19,58 +19,88 @@
             <option value="tw">Twi</option>
           </select>
         </div>
-        <p class="sub">5 letters · 8 guesses — new word each local day</p>
+        <p class="sub">EN &amp; ES: 5 letters · Twi: 6 letters · 8 guesses · new word each local day</p>
       </header>
 
       <main id="game-root" class="main" tabindex="-1" aria-label="Game board">
-        <div
-          id="connection-banner"
-          class="banner"
-          hidden
-          role="alert"
-        ></div>
-        <div id="board" class="board" aria-label="Guesses"></div>
+        <div class="board-shell">
+          <div class="board-column">
+            <div
+              id="connection-banner"
+              class="banner"
+              hidden
+              role="alert"
+            ></div>
+            <div id="board" class="board" aria-label="Guesses"></div>
 
-        <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+            <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
-        <p id="played-today-msg" class="played-today-msg" hidden>
-          You finished today’s puzzle. Come back tomorrow, or tap <strong>New round</strong> to clear saved progress if you’re stuck.
-        </p>
-        <button type="button" id="btn-reset" class="btn btn-reset" hidden>
-          New round
-        </button>
+            <p id="played-today-msg" class="played-today-msg" hidden>
+              You finished today’s puzzle. Come back tomorrow, or tap <strong>New round</strong> to clear saved progress if you’re stuck.
+            </p>
+            <button type="button" id="btn-reset" class="btn btn-reset" hidden>
+              New round
+            </button>
 
-        <div
-          id="invalid-overlay"
-          class="invalid-overlay"
-          hidden
-          aria-hidden="true"
-        >
-          <div class="invalid-popup" role="alertdialog" aria-labelledby="invalid-msg">
-            <div class="sad-face" aria-hidden="true">:(</div>
-            <p id="invalid-msg" class="invalid-msg">Not in word list</p>
-          </div>
-        </div>
-
-        <div id="end-modal" class="modal" hidden>
-          <div class="modal__panel">
-            <h2 id="end-title"></h2>
-            <p id="end-answer" class="end-answer"></p>
-            <div id="win-share-panel" class="win-share-panel" hidden>
-              <div id="end-stats" class="end-stats"></div>
-              <div class="modal__actions modal__actions--win">
-                <button type="button" id="btn-share" class="btn primary">
-                  Share image
-                </button>
+            <div
+              id="invalid-overlay"
+              class="invalid-overlay"
+              hidden
+              aria-hidden="true"
+            >
+              <div class="invalid-popup" role="alertdialog" aria-labelledby="invalid-msg">
+                <div class="sad-face" aria-hidden="true">:(</div>
+                <p id="invalid-msg" class="invalid-msg">Not in word list</p>
               </div>
-              <p id="share-hint" class="share-hint">
-                Uses today’s global stats for this language &amp; date.
-              </p>
             </div>
-            <div class="modal__actions">
-              <button type="button" id="btn-dismiss" class="btn">Close</button>
+
+            <div id="end-modal" class="modal" hidden>
+              <div class="modal__panel">
+                <h2 id="end-title"></h2>
+                <p id="end-answer" class="end-answer"></p>
+                <div id="win-share-panel" class="win-share-panel" hidden>
+                  <div id="end-stats" class="end-stats"></div>
+                  <div class="modal__actions modal__actions--win">
+                    <button type="button" id="btn-share" class="btn primary">
+                      Share image
+                    </button>
+                  </div>
+                  <p id="share-hint" class="share-hint">
+                    Uses today’s global stats for this language &amp; date.
+                  </p>
+                </div>
+                <div class="modal__actions">
+                  <button type="button" id="btn-dismiss" class="btn">Close</button>
+                </div>
+              </div>
             </div>
           </div>
+
+          <aside
+            class="color-legend"
+            id="color-legend"
+            lang="en"
+            role="complementary"
+            aria-labelledby="color-legend-heading"
+          >
+            <h2 id="color-legend-heading" class="color-legend__title"></h2>
+            <p id="color-legend-intro" class="color-legend__intro"></p>
+            <ul class="color-legend__list">
+              <li class="color-legend__item">
+                <span class="color-legend__swatch color-legend__swatch--correct" aria-hidden="true"></span>
+                <span id="legend-line-correct" class="color-legend__text"></span>
+              </li>
+              <li class="color-legend__item">
+                <span class="color-legend__swatch color-legend__swatch--present" aria-hidden="true"></span>
+                <span id="legend-line-present" class="color-legend__text"></span>
+              </li>
+              <li class="color-legend__item">
+                <span class="color-legend__swatch color-legend__swatch--absent" aria-hidden="true"></span>
+                <span id="legend-line-absent" class="color-legend__text"></span>
+              </li>
+            </ul>
+            <p id="color-legend-footer" class="color-legend__footer"></p>
+          </aside>
         </div>
 
         <div id="keyboard" class="keyboard" aria-label="On-screen keyboard"></div>

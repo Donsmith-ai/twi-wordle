@@ -1,5 +1,8 @@
 /**
  * Builds server/data/{en,es,tw}.json from scripts/lists/*.txt
+ *
+ * Twi: run `npm run fetch:tw-words` first to download the HF corpus into lists/tw.txt
+ * (https://huggingface.co/datasets/michsethowusu/twi_words), then run this script.
  */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -38,8 +41,11 @@ function filterEs(words) {
   );
 }
 
+/** Twi list: 6-letter [a-zɛɔ] NFC (HF corpus romanization + ɛɔ; see import-twi-hf.mjs). */
 function filterTw(words) {
-  return words.filter((w) => w.length === 5 && /^[a-z]{5}$/.test(w));
+  return words.filter(
+    (w) => w.normalize("NFC").length === 6 && /^[a-zɛɔ]{6}$/u.test(w.normalize("NFC")),
+  );
 }
 
 function tag(words) {
@@ -56,7 +62,11 @@ function write(lang, languageName, words) {
     version: 1,
     words: tag(words),
   };
-  writeFileSync(join(DATA, `${lang}.json`), JSON.stringify(payload, null, 2));
+  const compactJson = lang === "tw" && words.length > 2000 ? undefined : 2;
+  writeFileSync(
+    join(DATA, `${lang}.json`),
+    JSON.stringify(payload, null, compactJson),
+  );
   console.log(`${lang}.json: ${words.length} words`);
 }
 

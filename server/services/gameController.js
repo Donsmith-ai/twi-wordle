@@ -11,8 +11,7 @@ import {
   recordWinner,
   statsKey,
 } from "./statsStore.js";
-import { claimIpPlaySlot } from "./ipPlayStore.js";
-import { MAX_GUESSES, WORD_LENGTH } from "../config.js";
+import { MAX_GUESSES, wordLengthForLang } from "../config.js";
 import { foldEnglishOrTwiGuess, foldSpanishGuess } from "./latinFold.js";
 
 /** @type {Map<string, GameSession>} */
@@ -32,18 +31,26 @@ function isLang(x) {
 export function normalizeGuess(lang, raw) {
   if (typeof raw !== "string") return { ok: false, reason: "invalid_type" };
   const trimmed = raw.normalize("NFC").trim();
-  if (trimmed.length !== WORD_LENGTH) return { ok: false, reason: "length" };
+  const n = wordLengthForLang(/** @type {'en'|'es'|'tw'} */ (lang));
+
+  if (trimmed.length !== n) return { ok: false, reason: "length" };
 
   if (lang === "es") {
     const lowered = trimmed.toLowerCase();
     const folded = foldSpanishGuess(lowered);
-    if (folded.length !== WORD_LENGTH) return { ok: false, reason: "charset" };
+    if (folded.length !== n) return { ok: false, reason: "charset" };
     if (!/^[a-zñ]{5}$/.test(folded)) return { ok: false, reason: "charset" };
     return { ok: true, value: folded };
   }
-  if (lang === "en" || lang === "tw") {
+  if (lang === "tw") {
+    const t = trimmed.toLowerCase().normalize("NFC");
+    if (t.length !== n) return { ok: false, reason: "length" };
+    if (!/^[a-zɛɔ]{6}$/u.test(t)) return { ok: false, reason: "charset" };
+    return { ok: true, value: t };
+  }
+  if (lang === "en") {
     const folded = foldEnglishOrTwiGuess(trimmed);
-    if (folded.length !== WORD_LENGTH) return { ok: false, reason: "charset" };
+    if (folded.length !== n) return { ok: false, reason: "charset" };
     if (!/^[a-z]{5}$/.test(folded)) return { ok: false, reason: "charset" };
     return { ok: true, value: folded };
   }
@@ -77,9 +84,13 @@ function isIsoDate(d) {
 
 /**
  * POST /start
+ *
+ * Optional `resumeGuesses` + `resumeStatus` rebuild server state after a reload when the
+ * in-memory Map was cleared (e.g. server restart). The daily answer is deterministic per
+ * (lang, localDate), so counts stay aligned with rows persisted client-side.
  */
 export function startGame(req, res) {
-  const { lang, localDate, timeZone } = req.body || {};
+  const { lang, localDate, timeZone, resumeGuesses, resumeStatus } = req.body || {};
   if (!isLang(lang)) {
     return res.status(400).json({ error: "invalid_lang" });
   }
@@ -87,18 +98,24 @@ export function startGame(req, res) {
     return res.status(400).json({ error: "invalid_local_date" });
   }
 
-  const ip = clientIp(req);
-  if (!claimIpPlaySlot(localDate, ip)) {
-    return res.status(403).json({
-      error: "ip_already_played",
-      message:
-        "This network address already started today’s game. Only one play per day is allowed.",
-    });
-  }
-
   const fp = fingerprint(req);
   const key = statsKey(lang, localDate);
   recordPlayer(key, fp);
+
+  const rgRaw =
+    typeof resumeGuesses === "number" && Number.isFinite(resumeGuesses)
+      ? resumeGuesses
+      : 0;
+  let rg = Math.floor(rgRaw);
+  if (rg < 0 || rg > MAX_GUESSES) rg = 0;
+
+  /** @type {'playing'|'won'|'lost'} */
+  let st =
+    resumeStatus === "won" || resumeStatus === "lost" ? resumeStatus : "playing";
+
+  if (st === "won" && rg < 1) st = "playing";
+  if (st === "lost" && rg !== MAX_GUESSES) st = "playing";
+  if (st === "playing" && rg >= MAX_GUESSES) st = "lost";
 
   const answer = getDailyWord(/** @type {'en'|'es'|'tw'} */ (lang), localDate);
   const sessionId = randomBytes(24).toString("hex");
@@ -106,15 +123,19 @@ export function startGame(req, res) {
     lang,
     localDate,
     answer,
-    status: "playing",
-    guesses: 0,
+    status: st,
+    guesses: rg,
     anon_fp: fp,
   });
+
+  if (st === "won") {
+    recordWinner(key, fp);
+  }
 
   res.json({
     sessionId,
     maxGuesses: MAX_GUESSES,
-    wordLength: WORD_LENGTH,
+    wordLength: wordLengthForLang(/** @type {'en'|'es'|'tw'} */ (lang)),
     timeZone: typeof timeZone === "string" ? timeZone : null,
   });
 }
@@ -129,7 +150,12 @@ export function submitGuess(req, res) {
   }
   const sess = sessions.get(sessionId);
   if (!sess) {
-    return res.status(404).json({ error: "unknown_session", valid: false });
+    /* 200 (not 404) so DevTools does not log “failed to load resource” for recoverable stale IDs */
+    return res.json({
+      valid: false,
+      unknownSession: true,
+      error: "unknown_session",
+    });
   }
 
   if (sess.status !== "playing") {
@@ -156,6 +182,16 @@ export function submitGuess(req, res) {
   const word = norm.value;
   if (!isValidWord(sess.lang, word)) {
     return res.json({ valid: false, invalidReason: "not_in_dictionary" });
+  }
+
+  const wl = wordLengthForLang(/** @type {'en'|'es'|'tw'} */ (sess.lang));
+  if (word.length !== wl || sess.answer.length !== wl) {
+    return res.status(409).json({
+      valid: false,
+      invalidReason: "session_stale_length",
+      message:
+        "Start a new round — daily word cache was refreshed (language length mismatch).",
+    });
   }
 
   sess.guesses += 1;
