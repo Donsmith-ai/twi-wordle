@@ -56,13 +56,33 @@ body {
 }
 
 .sub {
-  margin: 0.25rem 0 0;
-  font-size: 0.8125rem;
+  margin: 0.35rem auto 0;
+  max-width: var(--board-max-w);
+  width: 100%;
+  padding: 0 0.35rem;
+  box-sizing: border-box;
+  font-size: clamp(0.92rem, 3.1vw, 1.07rem);
+  line-height: 1.48;
   color: var(--muted);
 }
 
 .lang-row {
   margin-top: 0.65rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.lang-row select {
+  font: inherit;
+  min-height: 2rem;
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.35rem;
+  border: 1px solid var(--tile-border);
+  background: var(--surface);
+  color: var(--text);
 }
 
 .banner {
@@ -264,12 +284,12 @@ body {
 }
 
 /*
- * Twi: 6 columns — mismo tamaño aproximado por casilla que EN/ES (5 cols).
+ * Twi (extra letters): scaled board width tracks column count like EN/ES.
  */
 .board.board--tw {
   width: min(
     100%,
-    calc(min(92vw, 430px) * 6 / 5 + var(--board-col-gap) + 0.05rem)
+    calc(min(92vw, 430px) * var(--board-cols, 6) / 5 + var(--board-col-gap) + 0.05rem)
   );
 }
 
@@ -465,11 +485,21 @@ body {
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
 }
 
-.invalid-overlay .sad-face {
-  font-size: 5rem;
-  font-weight: 800;
-  color: var(--danger);
+.invalid-overlay .invalid-emoji {
+  display: flex;
+  justify-content: center;
   animation: shake 0.45s ease;
+}
+
+.invalid-overlay .invalid-emoji picture,
+.invalid-overlay .invalid-emoji img {
+  display: block;
+}
+
+.invalid-overlay .invalid-emoji img {
+  width: 4.5rem;
+  height: 4.5rem;
+  object-fit: contain;
 }
 
 .invalid-msg {
@@ -527,6 +557,26 @@ body {
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+.end-definition {
+  margin: 0 0 0.85rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+  line-height: 1.52;
+  color: var(--muted);
+  max-height: 11rem;
+  overflow-y: auto;
+}
+
+.end-definition.is-loading {
+  font-style: italic;
+}
+
+.end-definition.is-unavailable {
+  font-style: italic;
 }
 
 .end-stats {

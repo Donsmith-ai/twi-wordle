@@ -7,7 +7,7 @@
  *   node scripts/import-twi-hf.mjs --hf-api     — train split via HF rows API only
  *   node scripts/import-twi-hf.mjs --union      — parquet + API (dedupe; slow, max coverage)
  *
- * Tokens: unique 6-letter words using Twi consonants/vowels including ɛ ɔ (matching game + server).
+ * Tokens: unique 4–6-letter words using Twi consonants/vowels including ɛ ɔ (matching game + server).
  */
 
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -73,8 +73,12 @@ function normalizeTwLemma(raw) {
   return s.trim();
 }
 
-function isSixLetterTwiRoman(s) {
-  return typeof s === "string" && s.length === 6 && /^[a-zɛɔ]{6}$/u.test(s);
+/** Playable lemma lengths 4–6 per server word rules. */
+function isPlayableTwiLemma(s) {
+  if (typeof s !== "string") return false;
+  const len = s.length;
+  if (len < 4 || len > 6) return false;
+  return new RegExp(`^[a-zɛɔ]{${len}}$`, "u").test(s);
 }
 
 async function iterableRawWordsFromParquet() {
@@ -131,7 +135,7 @@ function addWordsFromRaw(uniq, rawStrings) {
     if (!w) continue;
     if (/[\s\-_'’]/.test(w)) continue;
     if (/\d/.test(w)) continue;
-    if (!isSixLetterTwiRoman(w)) continue;
+    if (!isPlayableTwiLemma(w)) continue;
     uniq.add(w);
   }
   return scanned;
@@ -167,7 +171,7 @@ async function main() {
   mkdirSync(dirname(OUT), { recursive: true });
   writeFileSync(OUT, `${list.join("\n")}\n`, "utf8");
   console.log(
-    `Wrote ${list.length} unique 6-letter Twi lemmas to ${OUT} (${scanned} corpus rows scanned, mode=${mode}).`,
+    `Wrote ${list.length} unique Twi lemmas (4–6 letters) to ${OUT} (${scanned} corpus rows scanned, mode=${mode}).`,
   );
 }
 

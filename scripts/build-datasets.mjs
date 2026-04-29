@@ -41,11 +41,14 @@ function filterEs(words) {
   );
 }
 
-/** Twi list: 6-letter [a-zɛɔ] NFC (HF corpus romanization + ɛɔ; see import-twi-hf.mjs). */
+/** Twi list: 4–6-letter [a-zɛɔ] NFC (HF corpus romanization + ɛɔ; see import-twi-hf.mjs). */
 function filterTw(words) {
-  return words.filter(
-    (w) => w.normalize("NFC").length === 6 && /^[a-zɛɔ]{6}$/u.test(w.normalize("NFC")),
-  );
+  return words.filter((w) => {
+    const nfc = w.normalize("NFC");
+    const len = nfc.length;
+    if (len < 4 || len > 6) return false;
+    return new RegExp(`^[a-zɛɔ]{${len}}$`, "u").test(nfc);
+  });
 }
 
 function tag(words) {

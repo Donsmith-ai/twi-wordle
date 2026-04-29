@@ -2,10 +2,57 @@
 
 const STORAGE_PREFIX = "dw-v2";
 const MAX_ROWS = 8;
+const WL_PREF_PREFIX = "dw-wl-v1";
 
-/** Letters per puzzle: Twi uses 6, English and Spanish use 5. */
+/** User-chosen word length (clamped per language). */
+let wordLenChoice = 5;
+
+function allowedLengthsForLang(_l) {
+  return [4, 5, 6];
+}
+
 function wordLen() {
-  return lang === "tw" ? 6 : 5;
+  const allowed = allowedLengthsForLang(lang);
+  if (allowed.includes(wordLenChoice)) return /** @type {4|5|6} */ (wordLenChoice);
+  return /** @type {4|5|6} */ (allowed[allowed.length - 1]);
+}
+
+function loadWlPreference(l) {
+  try {
+    const x = localStorage.getItem(`${WL_PREF_PREFIX}-${l}`);
+    const n = Number(x);
+    if ([4, 5, 6].includes(n) && allowedLengthsForLang(l).includes(n))
+      return /** @type {4|5|6} */ (n);
+  } catch {
+    /* empty */
+  }
+  return null;
+}
+
+function saveWlPreference(l, wl) {
+  try {
+    localStorage.setItem(`${WL_PREF_PREFIX}-${l}`, String(wl));
+  } catch {
+    /* empty */
+  }
+}
+
+function syncWordLengthControl() {
+  const allowed = allowedLengthsForLang(lang);
+  const pref = loadWlPreference(lang);
+  if (pref !== null && allowed.includes(pref)) wordLenChoice = pref;
+  if (!allowed.includes(wordLenChoice))
+    wordLenChoice = /** @type {4|5|6} */ (allowed[0]);
+  if (wordLenSel) {
+    wordLenSel.innerHTML = "";
+    for (const n of allowed) {
+      const opt = document.createElement("option");
+      opt.value = String(n);
+      opt.textContent = `${n} letters`;
+      wordLenSel.appendChild(opt);
+    }
+    wordLenSel.value = String(wordLen());
+  }
 }
 
 function winFlipCompleteMs() {
@@ -15,13 +62,13 @@ function winFlipCompleteMs() {
 const WIN_MODAL_AFTER_MS = 650;
 
 /** Future: hard mode — server must enforce when enabled. */
-const GAME_CONFIG = { hardMode: false, wordLength: 5, maxGuesses: MAX_ROWS };
-void GAME_CONFIG;
 
 /** @type {'en'|'es'|'tw'} */
 let lang = "en";
 let draft = "";
 let sessionId = null;
+/** Opaque server id for dev/practice rounds so refresh keeps the same word (see server `roundKey`). */
+let roundKey = null;
 let rowIdx = 0;
 /** @type {{ word: string; feedback: string[] }[]} */
 let completedRows = [];
@@ -32,11 +79,13 @@ let tz = Intl.DateTimeFormat().resolvedOptions().timeZone ?? "UTC";
 const boardEl = document.getElementById("board");
 const keyboardEl = document.getElementById("keyboard");
 const langSel = document.getElementById("lang-select");
+const wordLenSel = document.getElementById("word-len-select");
 const toastEl = document.getElementById("toast");
 const invalidEl = document.getElementById("invalid-overlay");
 const modalEl = document.getElementById("end-modal");
 const endTitle = document.getElementById("end-title");
 const endAnswer = document.getElementById("end-answer");
+const endDefinition = document.getElementById("end-definition");
 const endStats = document.getElementById("end-stats");
 const btnShare = document.getElementById("btn-share");
 const winSharePanel = document.getElementById("win-share-panel");
@@ -53,6 +102,20 @@ let bootstrapFailed = false;
 
 /** Suppresses stale async results when startGame() is triggered again (e.g. language change during load). */
 let startGameGeneration = 0;
+
+/** Prevents overlapping POST /guess; paired with lang/session snapshots so a stale response never mutates state. */
+let guessInFlight = false;
+
+/** Shown when no online gloss exists for the solution word (win or loss). */
+const DEFINITION_UNAVAILABLE = {
+  en: "No dictionary gloss was found for this word.",
+  es: "No se encontró una definición breve para esta palabra.",
+  tw: "Couldn’t find a dictionary gloss for this word.",
+};
+
+function definitionUnavailableMsg() {
+  return DEFINITION_UNAVAILABLE[lang] ?? DEFINITION_UNAVAILABLE.en;
+}
 
 /** Localized “tile colors” panel (right of the board). */
 const COLOR_LEGEND = {
@@ -96,8 +159,23 @@ const COLOR_LEGEND = {
   },
 };
 
+/** Short subtitle under the title (localized). Kept ≤ board width via CSS max-width. */
+const GAME_INSTRUCTION = {
+  en: "4–6 letters · 8 guesses · one puzzle each local day (per language & length).",
+  es: "4–6 letras · 8 intentos · una palabra nueva cada día local (por idioma y longitud).",
+  tw: "Mmɛ 4–6 · nkɔmbɔ 8 · dwenna biara kasae foforo.",
+};
+
 function applyColorLegendLang() {
   const bundle = COLOR_LEGEND[lang] ?? COLOR_LEGEND.en;
+  const instr = document.getElementById("game-instruction");
+  if (instr) {
+    instr.textContent = GAME_INSTRUCTION[lang] ?? GAME_INSTRUCTION.en;
+    instr.setAttribute(
+      "lang",
+      lang === "tw" ? "tw" : lang === "es" ? "es" : "en",
+    );
+  }
   const aside = document.getElementById("color-legend");
   const h = document.getElementById("color-legend-heading");
   const intro = document.getElementById("color-legend-intro");
@@ -139,14 +217,16 @@ function isoLocalDate() {
 }
 
 function storageKey(l) {
-  return `${STORAGE_PREFIX}-${l}-${isoLocalDate()}`;
+  return `${STORAGE_PREFIX}-${l}-${wordLen()}-${isoLocalDate()}`;
 }
 
 function persist() {
   if (!sessionId) return;
   const payload = {
     lang,
+    wordLength: wordLen(),
     sessionId,
+    ...(typeof roundKey === "string" ? { roundKey } : {}),
     rows: completedRows,
     tz,
     localDate: isoLocalDate(),
@@ -213,7 +293,7 @@ function sanitizeImportedRows(rows) {
 }
 
 /**
- * Maps persisted rows to server resume hints (daily answer is deterministic per lang/date).
+ * Maps persisted rows to server resume hints (production: daily word; dev: same `roundKey` word).
  * @returns {{ guesses: number, resumeStatus: 'playing'|'won'|'lost' }}
  */
 function deriveResumeFromRows(rows) {
@@ -285,10 +365,14 @@ function refreshPlayabilityUx() {
 
 
 function validCharsetForGuess(str, l) {
-  const s = str.toLowerCase().normalize("NFC");
-  if (l === "es") return /^[a-zñ]{5}$/.test(s);
-  if (l === "tw") return /^[a-zɛɔ]{6}$/u.test(s);
-  return /^[a-z]{5}$/.test(s);
+  const n = wordLen();
+  const s0 = str.toLowerCase().normalize("NFC");
+  if (l === "es") return new RegExp(`^[a-zñ]{${n}}$`).test(s0);
+  if (l === "tw") {
+    const s = s0.replace(/\u03b5/g, "ɛ");
+    return new RegExp(`^[a-zɛɔ]{${n}}$`, "u").test(s);
+  }
+  return new RegExp(`^[a-z]{${n}}$`).test(s0);
 }
 
 /** Match server guess folding for ES; Twi accepts a–z + ɛɔ. */
@@ -297,7 +381,9 @@ function normalizeTyped(ch, l) {
   if (l === "tw") {
     let out = "";
     for (const cp of ch.normalize("NFC").toLowerCase()) {
-      const nfc = cp.normalize("NFC");
+      let nfc = cp.normalize("NFC");
+      /* Greek small epsilon (common font/IME confusion) → Twi Latin open e */
+      if (nfc === "\u03b5") nfc = "ɛ";
       if (nfc === "ɛ" || nfc === "ɔ") out += nfc;
       else if (/[a-z]/.test(nfc)) out += nfc;
       else return null;
@@ -391,7 +477,12 @@ function applyRowFeedback(row, word, cssStates) {
   if (!rowEl) return;
   const tiles = [...rowEl.querySelectorAll(".tile")];
   for (let i = 0; i < wordLen(); i++) {
-    const st = cssStates[i];
+    const st =
+      cssStates[i] === "correct" ||
+      cssStates[i] === "present" ||
+      cssStates[i] === "absent"
+        ? cssStates[i]
+        : "absent";
     stripTile(tiles[i]);
     tiles[i].textContent = word[i]?.toUpperCase() ?? "";
     void tiles[i].offsetWidth;
@@ -507,11 +598,17 @@ function onPhysicalKey(ev) {
 async function startGame() {
   let gen = 0;
   try {
+    if (langSel?.value) {
+      lang = /** @type {'en'|'es'|'tw'} */ (langSel.value);
+    }
+    syncWordLengthControl();
+    guessInFlight = false;
     if (
       typeof location !== "undefined" &&
       location.protocol === "file:"
     ) {
       sessionId = null;
+      roundKey = null;
       bootstrapFailed = true;
       buildBoard();
       renderKeyboard();
@@ -540,10 +637,13 @@ async function startGame() {
           : null;
       completedRows = restoredRows;
       sessionId = null;
+      roundKey =
+        saved && typeof saved.roundKey === "string" ? saved.roundKey : null;
 
       if (gameFinishedFromRows() && !lastOutcome) {
         localStorage.removeItem(storageKey(lang));
         sessionId = null;
+        roundKey = null;
         completedRows = [];
         lastOutcome = null;
       } else if (restoredRows.length > 0) {
@@ -575,10 +675,12 @@ async function startGame() {
           method: "POST",
           body: {
             lang,
+            wordLength: wordLen(),
             localDate: ld,
             timeZone: tz,
             resumeGuesses: resume.guesses,
             resumeStatus: resume.resumeStatus,
+            ...(typeof roundKey === "string" ? { roundKey } : {}),
           },
         });
         if (myGen !== startGameGeneration) return;
@@ -592,12 +694,17 @@ async function startGame() {
         if (!startRes.ok || typeof resumeData.sessionId !== "string") {
           localStorage.removeItem(storageKey(lang));
           sessionId = null;
+          roundKey = null;
           completedRows = [];
           lastOutcome = null;
           toastMsg("Could not sync session — reconnecting.");
           return await startGame();
         }
         sessionId = resumeData.sessionId;
+        roundKey =
+          typeof resumeData.roundKey === "string"
+            ? resumeData.roundKey
+            : roundKey;
         persist();
         focusGameSurface();
         bootstrapFailed = false;
@@ -608,6 +715,7 @@ async function startGame() {
            but sessionId may be stale (e.g. server restart). Force a new /start. */
         localStorage.removeItem(storageKey(lang));
         sessionId = null;
+        roundKey = null;
         completedRows = [];
         lastOutcome = null;
       }
@@ -616,6 +724,7 @@ async function startGame() {
     gen = ++startGameGeneration;
 
     sessionId = null;
+    roundKey = null;
     completedRows = [];
     rowIdx = 0;
     draft = "";
@@ -629,6 +738,7 @@ async function startGame() {
       method: "POST",
       body: {
         lang,
+        wordLength: wordLen(),
         localDate: ld,
         timeZone: tz,
       },
@@ -645,25 +755,37 @@ async function startGame() {
       if (gen !== startGameGeneration) return;
       const quotaReached =
         res.status === 403 && data?.error === "ip_already_played";
+      const emptyPool =
+        res.status === 503 && data?.error === "empty_word_pool";
       if (quotaReached) {
         toastMsg(
           data.message ??
             "This network already played today’s puzzle in this language. Pick another language or wait until tomorrow.",
         );
+      } else if (emptyPool) {
+        toastMsg(
+          data.message ??
+            "No words available for this language and length. Try another length.",
+        );
       } else {
         toastMsg("Could not start game — is the server running?");
       }
       sessionId = null;
+      roundKey = null;
       completedRows = [];
       lastOutcome = null;
       // Only show the “no session / npm start” banner for real outages & parse errors—not daily quota per language.
-      bootstrapFailed = !quotaReached;
+      bootstrapFailed = !quotaReached && !emptyPool;
       buildBoard();
       renderKeyboard();
       return;
     }
     if (gen !== startGameGeneration) return;
     sessionId = data.sessionId;
+    roundKey =
+      typeof data.roundKey === "string"
+        ? data.roundKey
+        : null;
     completedRows = [];
     draft = "";
     rowIdx = 0;
@@ -677,6 +799,7 @@ async function startGame() {
       console.error(e);
       toastMsg("Could not connect. Check network or run npm start.");
       sessionId = null;
+      roundKey = null;
       completedRows = [];
       lastOutcome = null;
       bootstrapFailed = true;
@@ -782,23 +905,50 @@ function focusGameSurface() {
 }
 
 async function submitGuess() {
-  if (!canType()) return;
+  if (!canType() || guessInFlight) return;
   if (
     draft.length !== wordLen() ||
     !validCharsetForGuess(draft, lang)
   )
     return;
-  const guess = draft.toLowerCase();
+  const guess =
+    lang === "tw"
+      ? draft.toLowerCase().normalize("NFC").replace(/\u03b5/g, "ɛ")
+      : draft.toLowerCase();
+  const langWhenSent = lang;
+  const sessionWhenSent = sessionId;
+  const wlWhenSent = wordLen();
+  guessInFlight = true;
   toastMsg("");
-  const res = await api("/api/game/guess", {
-    method: "POST",
-    body: { sessionId, guess },
-  });
+  let res;
+  try {
+    res = await api("/api/game/guess", {
+      method: "POST",
+      body: { sessionId, guess },
+    });
+  } catch {
+    guessInFlight = false;
+    refreshEnterDisabled();
+    toastMsg("Network error.");
+    return;
+  }
   let data = {};
   try {
     data = await res.json();
   } catch {
+    guessInFlight = false;
+    refreshEnterDisabled();
     toastMsg("Network error.");
+    return;
+  }
+
+  if (
+    lang !== langWhenSent ||
+    sessionId !== sessionWhenSent ||
+    wordLen() !== wlWhenSent
+  ) {
+    guessInFlight = false;
+    refreshEnterDisabled();
     return;
   }
 
@@ -807,8 +957,11 @@ async function submitGuess() {
     /** Legacy servers returned 404 here */
     res.status === 404
   ) {
+    guessInFlight = false;
+    refreshEnterDisabled();
     localStorage.removeItem(storageKey(lang));
     sessionId = null;
+    roundKey = null;
     toastMsg("Session expired — reloading.");
     await startGame();
     return;
@@ -819,28 +972,43 @@ async function submitGuess() {
     /** @type {{invalidReason?:string}} */ (data).invalidReason ===
       "session_stale_length"
   ) {
+    guessInFlight = false;
+    refreshEnterDisabled();
     localStorage.removeItem(storageKey(lang));
     sessionId = null;
+    roundKey = null;
     toastMsg(data.message ?? "Starting new round — please enter again.");
     await startGame();
     return;
   }
 
   if (!res.ok) {
+    guessInFlight = false;
+    refreshEnterDisabled();
     toastMsg("Server error.");
     return;
   }
 
   if (data.valid === false) {
+    guessInFlight = false;
+    refreshEnterDisabled();
     if (data.invalidReason === "not_in_dictionary") showInvalid();
     else toastMsg("Guess not accepted.");
     return;
   }
 
-  if (!Array.isArray(data.feedback)) {
+  if (
+    !Array.isArray(data.feedback) ||
+    data.feedback.length !== wordLen()
+  ) {
+    guessInFlight = false;
+    refreshEnterDisabled();
     toastMsg("Try again.");
     return;
   }
+
+  guessInFlight = false;
+  refreshEnterDisabled();
 
   completedRows.push({ word: guess, feedback: data.feedback });
   const won = data.status === "won";
@@ -889,8 +1057,73 @@ function showInvalid() {
   }, 3000);
 }
 
+/** Invalidates in-flight `/api/word-definition` handlers after modal close or loss modal. */
+let definitionFetchId = 0;
+
 /**
- * Win: stats + share panel. Loss: only title, answer, Close (no share UI).
+ * Shows dictionary-style gloss for the solution word when the round ends (win or loss).
+ * Best-effort remote lookup; falls back to a short localized message when unavailable.
+ */
+async function loadAnswerDefinition(answer) {
+  const id = ++definitionFetchId;
+  if (!endDefinition) return;
+  const w =
+    typeof answer === "string" ? answer.normalize("NFC").trim() : "";
+  if (!w) {
+    endDefinition.hidden = true;
+    endDefinition.textContent = "";
+    endDefinition.removeAttribute("lang");
+    endDefinition.classList.remove("is-loading", "is-unavailable");
+    return;
+  }
+  endDefinition.hidden = false;
+  endDefinition.lang =
+    lang === "es" ? "es" : lang === "tw" ? "tw" : "en";
+  endDefinition.textContent = "Fetching definition…";
+  endDefinition.classList.add("is-loading");
+  endDefinition.classList.remove("is-unavailable");
+
+  try {
+    const qs = new URLSearchParams({
+      lang,
+      word: w.toLowerCase(),
+      wordLength: String(wordLen()),
+    });
+    const res = await fetch(`/api/word-definition?${qs}`);
+    const data = await res.json().catch(() => ({}));
+    if (id !== definitionFetchId) return;
+    const def =
+      typeof data?.definition === "string" ? data.definition.trim() : "";
+    endDefinition.classList.remove("is-loading");
+    endDefinition.textContent = def || definitionUnavailableMsg();
+    endDefinition.hidden = false;
+    endDefinition.classList.toggle("is-unavailable", !def);
+    if (!def) endDefinition.removeAttribute("lang");
+  } catch {
+    if (id !== definitionFetchId) return;
+    endDefinition.classList.remove("is-loading");
+    endDefinition.textContent = definitionUnavailableMsg();
+    endDefinition.hidden = false;
+    endDefinition.classList.add("is-unavailable");
+    endDefinition.removeAttribute("lang");
+  }
+}
+
+function closeEndModal() {
+  definitionFetchId++;
+  if (endDefinition) {
+    endDefinition.hidden = true;
+    endDefinition.textContent = "";
+    endDefinition.classList.remove("is-loading", "is-unavailable");
+    endDefinition.removeAttribute("lang");
+  }
+  modalEl.hidden = true;
+  modalEl.setAttribute("aria-hidden", "true");
+  refreshPlayabilityUx();
+}
+
+/**
+ * Win: stats + share panel. Loss: answer line only (both load dictionary gloss).
  */
 function showEndModal(won, answer, stats) {
   if (won) {
@@ -916,12 +1149,7 @@ function showEndModal(won, answer, stats) {
   }
   modalEl.hidden = false;
   modalEl.removeAttribute("aria-hidden");
-}
-
-function closeEndModal() {
-  modalEl.hidden = true;
-  modalEl.setAttribute("aria-hidden", "true");
-  refreshPlayabilityUx();
+  void loadAnswerDefinition(answer ?? "");
 }
 
 function toastMsg(msg) {
@@ -943,7 +1171,7 @@ function exportShare(won, answer) {
   ctx.fillText(isoLocalDate(), 20, 58);
 
   const wl = wordLen();
-  const cell = wl === 6 ? 34 : 42;
+  const cell = wl >= 6 ? 34 : wl <= 4 ? 48 : 42;
   const gap = 6;
   const ox = 20;
   const oy = 80;
@@ -995,6 +1223,17 @@ btnDismiss.addEventListener("click", () => {
 
 langSel.addEventListener("change", async () => {
   lang = /** @type {'en'|'es'|'tw'} */ (langSel.value);
+  syncWordLengthControl();
+  applyColorLegendLang();
+  await startGame();
+});
+
+wordLenSel?.addEventListener("change", async () => {
+  const n = Number.parseInt(String(wordLenSel?.value ?? ""), 10);
+  if (![4, 5, 6].includes(n) || !allowedLengthsForLang(lang).includes(n))
+    return;
+  wordLenChoice = /** @type {4|5|6} */ (n);
+  saveWlPreference(lang, wordLenChoice);
   applyColorLegendLang();
   await startGame();
 });
@@ -1011,6 +1250,7 @@ keyboardEl?.addEventListener("click", (e) => {
 btnReset?.addEventListener("click", async () => {
   localStorage.removeItem(storageKey(lang));
   sessionId = null;
+  roundKey = null;
   completedRows = [];
   lastOutcome = null;
   draft = "";
@@ -1025,6 +1265,7 @@ window.addEventListener("keydown", onPhysicalKey, true);
 
 buildBoard();
 langSel.value = lang;
+syncWordLengthControl();
 applyColorLegendLang();
 startGame().then(() => {
   keyboardEl.hidden = false;

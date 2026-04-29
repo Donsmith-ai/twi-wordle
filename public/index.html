@@ -18,8 +18,12 @@
             <option value="es">Español</option>
             <option value="tw">Twi</option>
           </select>
+          <label class="sr-only" for="word-len-select">Word length</label>
+          <select id="word-len-select" aria-label="Letters per word"></select>
         </div>
-        <p class="sub">EN &amp; ES: 5 letters · Twi: 6 letters · 8 guesses · new word each local day</p>
+        <p id="game-instruction" class="sub" lang="en">
+          4–6 letters · 8 guesses · one puzzle each local day (per language &amp; length).
+        </p>
       </header>
 
       <main id="game-root" class="main" tabindex="-1" aria-label="Game board">
@@ -49,7 +53,20 @@
               aria-hidden="true"
             >
               <div class="invalid-popup" role="alertdialog" aria-labelledby="invalid-msg">
-                <div class="sad-face" aria-hidden="true">:(</div>
+                <div class="invalid-emoji" aria-hidden="true">
+                  <picture>
+                    <source
+                      srcset="https://fonts.gstatic.com/s/e/notoemoji/latest/1f642_200d_2194_fe0f/512.webp"
+                      type="image/webp"
+                    />
+                    <img
+                      src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f642_200d_2194_fe0f/512.gif"
+                      alt="🙂"
+                      width="32"
+                      height="32"
+                    />
+                  </picture>
+                </div>
                 <p id="invalid-msg" class="invalid-msg">Not in word list</p>
               </div>
             </div>
@@ -58,6 +75,7 @@
               <div class="modal__panel">
                 <h2 id="end-title"></h2>
                 <p id="end-answer" class="end-answer"></p>
+                <p id="end-definition" class="end-definition" aria-live="polite" hidden></p>
                 <div id="win-share-panel" class="win-share-panel" hidden>
                   <div id="end-stats" class="end-stats"></div>
                   <div class="modal__actions modal__actions--win">

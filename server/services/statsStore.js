@@ -27,9 +27,15 @@ function saveStore() {
 
 loadStore();
 
-/** @param {string} lang @param {string} localDate */
-export function statsKey(lang, localDate) {
-  return `${lang}|${localDate}`;
+/**
+ * Stats bucket per language × word length × calendar day.
+ * @param {string} lang
+ * @param {string} localDate
+ * @param {number|string} wordLength
+ */
+export function statsKey(lang, localDate, wordLength) {
+  const wl = Math.floor(Number(wordLength));
+  return `${lang}|${wl}|${localDate}`;
 }
 
 function bucket(key) {
