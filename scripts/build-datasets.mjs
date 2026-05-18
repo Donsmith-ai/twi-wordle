@@ -1,8 +1,8 @@
 /**
  * Builds server/data/{en,es,tw}.json from scripts/lists/*.txt
  *
- * Twi: run `npm run fetch:tw-words` first to download the HF corpus into lists/tw.txt
- * (https://huggingface.co/datasets/michsethowusu/twi_words), then run this script.
+ * Twi: run `npm run fetch:tw-words` first to download Masakhane POS tokens into lists/tw.txt
+ * (https://github.com/masakhane-io/masakhane-pos/tree/main/data/twi), then run this script.
  */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -41,7 +41,7 @@ function filterEs(words) {
   );
 }
 
-/** Twi list: 4–6-letter [a-zɛɔ] NFC (HF corpus romanization + ɛɔ; see import-twi-hf.mjs). */
+/** Twi list: 4–6-letter [a-zɛɔ] NFC (Masakhane POS romanization + ɛɔ; see import-twi-masakhane.mjs). */
 function filterTw(words) {
   return words.filter((w) => {
     const nfc = w.normalize("NFC");

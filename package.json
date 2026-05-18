@@ -7,11 +7,9 @@
   "scripts": {
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
-    "fetch:tw-words": "node scripts/import-twi-hf.mjs",
-    "fetch:tw-words:api": "node scripts/import-twi-hf.mjs --hf-api && node scripts/build-datasets.mjs",
-    "fetch:tw-words:union": "node scripts/import-twi-hf.mjs --union && node scripts/build-datasets.mjs",
+    "fetch:tw-words": "node scripts/import-twi-masakhane.mjs",
     "build:data": "node scripts/build-datasets.mjs",
-    "build:data:hf": "node scripts/import-twi-hf.mjs && node scripts/build-datasets.mjs"
+    "build:data:tw": "node scripts/import-twi-masakhane.mjs && node scripts/build-datasets.mjs"
   },
   "engines": {
     "node": ">=18"
@@ -21,8 +19,5 @@
     "an-array-of-spanish-words": "^2.0.0",
     "cors": "^2.8.5",
     "express": "^4.21.2"
-  },
-  "devDependencies": {
-    "hyparquet": "^1.25.6"
   }
 }
