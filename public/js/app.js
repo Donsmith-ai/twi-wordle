@@ -1046,16 +1046,28 @@ async function submitGuess() {
   renderKeyboard();
 }
 
+function hideInvalid() {
+  if (showInvalid._timer) {
+    window.clearTimeout(showInvalid._timer);
+    showInvalid._timer = undefined;
+  }
+  if (!invalidEl) return;
+  invalidEl.hidden = true;
+  invalidEl.setAttribute("aria-hidden", "true");
+}
+
 function showInvalid() {
-  if (showInvalid._timer) window.clearTimeout(showInvalid._timer);
+  hideInvalid();
   invalidEl.hidden = false;
   invalidEl.setAttribute("aria-hidden", "false");
-  showInvalid._timer = window.setTimeout(() => {
-    invalidEl.hidden = true;
-    invalidEl.setAttribute("aria-hidden", "true");
-    showInvalid._timer = undefined;
-  }, 3000);
+  showInvalid._timer = window.setTimeout(hideInvalid, 3000);
 }
+
+invalidEl?.addEventListener("click", (e) => {
+  if (invalidEl.hidden) return;
+  const popup = invalidEl.querySelector(".invalid-popup");
+  if (!popup?.contains(/** @type {Node} */ (e.target))) hideInvalid();
+});
 
 /** Invalidates in-flight `/api/word-definition` handlers after modal close or loss modal. */
 let definitionFetchId = 0;
