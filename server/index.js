@@ -1,3 +1,4 @@
+import { loadEnvFile } from "node:process";
 import express from "express";
 import cors from "cors";
 import { dirname, join } from "node:path";
@@ -10,6 +11,11 @@ import {
 import { getWordDefinition } from "./services/dictionaryLookup.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+try {
+  loadEnvFile(join(__dirname, "..", ".env"));
+} catch {
+  /* optional local secrets */
+}
 const publicDir = join(__dirname, "..", "public");
 const PORT = Number(process.env.PORT) || 3000;
 

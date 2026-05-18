@@ -49,3 +49,9 @@ export const HISTORY_BUFFER_SIZE = 45;
 export function getDailyWordSecret() {
   return process.env.DAILY_WORD_SECRET || "dev-only-change-in-production";
 }
+
+/** RAE API key (https://rae-api.com) for Spanish end-game definitions. */
+export function getRaeApiKey() {
+  const key = process.env.RAE_API_KEY;
+  return typeof key === "string" && key.trim() ? key.trim() : "";
+}

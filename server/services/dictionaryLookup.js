@@ -1,10 +1,15 @@
 /**
  * Looks up short dictionary-style glosses for win-modal copy.
  * English: Free Dictionary API (dictionaryapi.dev).
- * Spanish / Twi fallbacks: English Wiktionary language-section extracts (best-effort plain text).
+ * Spanish: RAE API (https://rae-api.com) when RAE_API_KEY is set; Wiktionary fallback.
+ * Twi: Wiktionary / Free Dictionary fallbacks (best-effort plain text).
  */
 
+import { getRaeApiKey } from "../config.js";
+import { foldSpanishGuess } from "./latinFold.js";
+
 const FETCH_MS = 12_000;
+const RAE_BASE = "https://rae-api.com/api/words";
 const LANGS = new Set(["en", "es", "tw"]);
 
 /** @param {unknown} data */
@@ -78,6 +83,99 @@ function extractWikiLangSection(fullExtract, langSection) {
   return m ? cleanWikiBody(m[1]) : null;
 }
 
+/** @param {unknown} data RAE `/api/words/{palabra}` payload */
+function formatRaeWordJson(data) {
+  const meanings = data?.meanings;
+  if (!Array.isArray(meanings) || !meanings.length) return null;
+  /** @type {string[]} */
+  const parts = [];
+  outer: for (const meaning of meanings) {
+    for (const sense of meaning.senses ?? []) {
+      const def =
+        typeof sense.description === "string"
+          ? sense.description.trim()
+          : typeof sense.raw === "string"
+            ? sense.raw.replace(/^\d+\.\s*/, "").trim()
+            : "";
+      if (def) parts.push(def);
+      if (parts.length >= 4) break outer;
+    }
+    for (const loc of meaning.locutions ?? []) {
+      for (const sense of loc.senses ?? []) {
+        const def =
+          typeof sense.description === "string" ? sense.description.trim() : "";
+        if (def) parts.push(def);
+        if (parts.length >= 4) break outer;
+      }
+    }
+  }
+  if (!parts.length) return null;
+  let text = parts.slice(0, 3).join(" ");
+  if (text.length > 520) text = `${text.slice(0, 517)}…`;
+  return text;
+}
+
+/**
+ * @param {string} lemma RAE headword
+ * @param {string} apiKey
+ */
+async function fetchRaeWordEntry(lemma, apiKey) {
+  const url = `${RAE_BASE}/${encodeURIComponent(lemma)}`;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), FETCH_MS);
+  const headers = { Accept: "application/json" };
+  if (apiKey) headers["X-API-Key"] = apiKey;
+  try {
+    const res = await fetch(url, { signal: ctrl.signal, headers });
+    const json = await res.json().catch(() => null);
+    if (!res.ok || !json || json.ok === false) {
+      return { ok: false, suggestions: json?.suggestions };
+    }
+    return { ok: true, data: json.data };
+  } catch {
+    return { ok: false };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** Single-vowel accent variants for unaccented puzzle lemmas (e.g. angel → ángel). */
+function spanishAccentCandidates(word) {
+  const map = { a: "á", e: "é", i: "í", o: "ó", u: "ú" };
+  /** @type {string[]} */
+  const out = [];
+  for (let i = 0; i < word.length; i++) {
+    const acc = map[word[i]];
+    if (acc) out.push(word.slice(0, i) + acc + word.slice(i + 1));
+  }
+  return out;
+}
+
+/**
+ * Game Spanish lemmas are often unaccented; map back via RAE suggestions when needed.
+ * @param {string} word folded lowercase lemma from the puzzle
+ * @param {string} apiKey
+ */
+async function fetchSpanishRaeDefinitions(word, apiKey) {
+  let entry = await fetchRaeWordEntry(word, apiKey);
+  if (!entry.ok) {
+    const suggestions = Array.isArray(entry.suggestions) ? entry.suggestions : [];
+    const match = suggestions.find(
+      (s) => typeof s === "string" && foldSpanishGuess(s) === word,
+    );
+    if (match) {
+      entry = await fetchRaeWordEntry(match, apiKey);
+    } else {
+      for (const candidate of spanishAccentCandidates(word)) {
+        entry = await fetchRaeWordEntry(candidate, apiKey);
+        if (entry.ok) break;
+      }
+    }
+  }
+  if (!entry.ok || !entry.data) return null;
+  return formatRaeWordJson(entry.data);
+}
+
 /** @param {string} body */
 function cleanWikiBody(body) {
   let s = body
@@ -120,6 +218,11 @@ export async function lookupWordDefinition(lang, word) {
   }
 
   if (lang === "es") {
+    const raeKey = getRaeApiKey();
+    if (raeKey) {
+      const rae = await fetchSpanishRaeDefinitions(word, raeKey);
+      if (rae) return rae;
+    }
     const ex = await fetchEnWiktionaryExtract(word);
     return extractWikiLangSection(ex, "Spanish");
   }
